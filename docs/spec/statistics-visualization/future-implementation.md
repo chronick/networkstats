@@ -1,49 +1,32 @@
-# Statistics and Visualization Specification
+# Statistics and Visualization Specification: Future Implementation
 
-## Overview
 
-The statistics and visualization module provides comprehensive insights into network performance through interactive charts, real-time dashboards, and detailed analytics. It supports multiple time ranges, various chart types, and export capabilities.
 
-## Design Principles
+## Enhanced Dashboard Layout
 
-1. **Information Hierarchy**: Most important metrics prominently displayed
-2. **Interactive Exploration**: Drill-down capabilities for detailed analysis
-3. **Real-time Updates**: Live data visualization without page refresh
-4. **Performance**: Efficient rendering even with large datasets
-5. **Accessibility**: Color-blind friendly palettes, keyboard navigation
-
-## Current Implementation
-
-### Basic Statistics Window
-
-```python
-import toga
-import plotly.express as px
-import polars as pl
-
-class StatsWindow(toga.App):
-    def startup(self):
-        self.main_window = toga.MainWindow(title="Network Stats")
-        
-        # Time range selector
-        self.timeframe = toga.Selection(
-            items=[
-                ("Last hour", 3600),
-                ("24 hours", 86400),
-                ("7 days", 604800),
-            ]
-        )
-        
-        # Chart container
-        self.web = toga.WebView()
-        
-        # Refresh data and render
-        self.refresh(None)
-```
-
-## Future Implementation
-
-### Enhanced Dashboard Layout
+┌─────────────────────────────────────────────────────────────┐
+│ Network Statistics Dashboard                    [─][□][X]   │
+├─────────────────────────────────────────────────────────────┤
+│ Time Range: [Last 24 hours ▼] Auto-refresh: [✓] [Export]    │
+├─────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────┐ ┌─────────────────────┐            │
+│ │ Overall Uptime      │ │ Current Status       │            │
+│ │   99.87%           │ │ ✅ All Systems OK    │            │
+│ │ ████████████████░  │ │ 2/2 targets online   │            │
+│ └─────────────────────┘ └─────────────────────┘            │
+│                                                              │
+│ ┌─────────────────────┐ ┌─────────────────────┐            │
+│ │ Avg Latency         │ │ Packet Loss          │            │
+│ │   15.3 ms          │ │   0.02%             │            │
+│ │ ↓ 2.1ms from hour  │ │ ━━━━━━━━━━━━━━━━━   │            │
+│ └─────────────────────┘ └─────────────────────┘            │
+├─────────────────────────────────────────────────────────────┤
+│ [Uptime] [Latency] [Timeline] [Heatmap] [Compare]          │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  [Interactive Chart Area]                                    │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -69,11 +52,12 @@ class StatsWindow(toga.App):
 │  [Interactive Chart Area]                                    │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
+
 ```
 
-### Core Components
+## Core Components
 
-#### 1. Summary Cards
+### 1. Summary Cards
 
 ```python
 class SummaryCard:
@@ -138,11 +122,12 @@ class SummaryCard:
         
         if hasattr(self, 'progress'):
             self.progress.value = current
+
 ```
 
-#### 2. Chart Types
+### 2. Chart Types
 
-##### Uptime Chart
+#### Uptime Chart
 
 ```python
 class UptimeChart:
@@ -189,10 +174,10 @@ class UptimeChart:
             )
             
         return fig.to_html(include_plotlyjs='cdn')
+
 ```
 
-##### Latency Chart
-
+#### Latency Chart
 ```python
 class LatencyChart:
     """Latency visualization with percentiles."""
@@ -260,9 +245,10 @@ class LatencyChart:
         )
         
         return fig.to_html(include_plotlyjs='cdn')
+
 ```
 
-##### Timeline View
+#### Timeline View
 
 ```python
 class TimelineView:
@@ -306,10 +292,10 @@ class TimelineView:
         )
         
         return fig.to_html(include_plotlyjs='cdn')
+
 ```
 
-##### Heatmap View
-
+#### Heatmap View
 ```python
 class HeatmapView:
     """Heatmap visualization for patterns."""
@@ -336,11 +322,12 @@ class HeatmapView:
         )
         
         return fig.to_html(include_plotlyjs='cdn')
+
 ```
 
-### 3. Interactive Features
+## 3. Interactive Features
 
-#### Drill-Down Analysis
+### Drill-Down Analysis
 
 ```python
 class DrillDownHandler:
@@ -380,9 +367,11 @@ class DrillDownHandler:
         
         detail_window.content = web_view
         detail_window.show()
+
 ```
 
-#### Real-time Updates
+### Real-time Updates
+
 
 ```python
 class RealtimeUpdater:
@@ -419,9 +408,11 @@ class RealtimeUpdater:
             
             await self.chart_container.evaluate_javascript(update_script)
             await asyncio.sleep(self.update_interval)
+
 ```
 
-### 4. Export Functionality
+## 4. Export Functionality
+
 
 ```python
 class ExportManager:
@@ -477,12 +468,12 @@ class ExportManager:
             return await report.generate_pdf()
         else:  # PNG
             return await report.generate_image()
+
 ```
 
-### 5. Advanced Analytics
+## 5. Advanced Analytics
 
-#### Anomaly Detection
-
+### Anomaly Detection
 ```python
 class AnomalyDetector:
     """Detect anomalies in network metrics."""
@@ -554,10 +545,10 @@ class AnomalyDetector:
         ))
         
         return fig.to_html()
+
 ```
 
-#### Predictive Analytics
-
+### Predictive Analytics
 ```python
 class PredictiveAnalytics:
     """Predict future network behavior."""
@@ -591,172 +582,5 @@ class PredictiveAnalytics:
             'predicted_uptime': max(0, min(100, recent_uptime + trend * 24)),
             'confidence': 0.75  # Simplified confidence score
         }
+
 ```
-
-## Performance Optimization
-
-### Data Aggregation
-
-```python
-class DataAggregator:
-    """Efficient data aggregation for large datasets."""
-    
-    def __init__(self, storage):
-        self.storage = storage
-        self.cache = {}
-        
-    async def get_aggregated_data(
-        self, 
-        timeframe: int, 
-        resolution: str = 'auto'
-    ) -> pl.DataFrame:
-        """Get aggregated data with appropriate resolution."""
-        cache_key = f"{timeframe}_{resolution}"
-        
-        if cache_key in self.cache:
-            return self.cache[cache_key]
-        
-        # Determine resolution
-        if resolution == 'auto':
-            resolution = self._determine_resolution(timeframe)
-        
-        # Query with aggregation
-        if resolution == 'minute':
-            df = await self.storage.query_raw(timeframe)
-        elif resolution == 'hour':
-            df = await self.storage.query_hourly_aggregates(timeframe)
-        elif resolution == 'day':
-            df = await self.storage.query_daily_aggregates(timeframe)
-        
-        # Cache result
-        self.cache[cache_key] = df
-        
-        return df
-    
-    def _determine_resolution(self, timeframe: int) -> str:
-        """Determine appropriate data resolution."""
-        if timeframe <= 3600:  # 1 hour
-            return 'minute'
-        elif timeframe <= 86400 * 7:  # 1 week
-            return 'hour'
-        else:
-            return 'day'
-```
-
-### Lazy Loading
-
-```python
-class LazyChartLoader:
-    """Load charts on-demand for better performance."""
-    
-    def __init__(self, container: toga.Box):
-        self.container = container
-        self.charts = {}
-        self.loaded_charts = set()
-        
-    def register_chart(self, chart_id: str, chart_factory):
-        """Register a chart for lazy loading."""
-        self.charts[chart_id] = chart_factory
-        
-        # Add placeholder
-        placeholder = toga.Box(
-            style=Pack(height=400, background_color='#f8f9fa')
-        )
-        placeholder.id = f"placeholder_{chart_id}"
-        
-        self.container.add(placeholder)
-    
-    async def load_chart(self, chart_id: str):
-        """Load a specific chart."""
-        if chart_id in self.loaded_charts:
-            return
-            
-        # Get chart factory
-        chart_factory = self.charts.get(chart_id)
-        if not chart_factory:
-            return
-        
-        # Generate chart
-        chart_html = await chart_factory()
-        
-        # Replace placeholder
-        web_view = toga.WebView()
-        web_view.set_content(chart_html, 'text/html')
-        
-        # Find and replace placeholder
-        placeholder_id = f"placeholder_{chart_id}"
-        for i, child in enumerate(self.container.children):
-            if hasattr(child, 'id') and child.id == placeholder_id:
-                self.container.remove(child)
-                self.container.insert(i, web_view)
-                break
-        
-        self.loaded_charts.add(chart_id)
-```
-
-## Future Enhancements
-
-### 1. Altair/Vega-Lite Migration
-
-```python
-import altair as alt
-
-class AltairCharts:
-    """Modern declarative charting with Altair."""
-    
-    def create_interactive_dashboard(self, df: pd.DataFrame) -> str:
-        """Create interactive dashboard with linked charts."""
-        # Selection for interactivity
-        selection = alt.selection_multi(fields=['target'])
-        
-        # Base chart
-        base = alt.Chart(df).add_selection(selection)
-        
-        # Uptime chart
-        uptime = base.mark_bar().encode(
-            x='target:N',
-            y='uptime_pct:Q',
-            color=alt.condition(
-                selection,
-                alt.Color('uptime_pct:Q', scale=alt.Scale(scheme='redyellowgreen')),
-                alt.value('lightgray')
-            ),
-            tooltip=['target', 'uptime_pct', 'total_pings']
-        )
-        
-        # Latency time series
-        latency = base.mark_line().encode(
-            x='timestamp:T',
-            y='latency_ms:Q',
-            color='target:N',
-            opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
-        ).transform_filter(selection)
-        
-        # Combine charts
-        dashboard = alt.vconcat(uptime, latency).resolve_scale(
-            color='independent'
-        )
-        
-        return dashboard.to_html()
-```
-
-### 2. Machine Learning Integration
-
-- Predictive maintenance alerts
-- Anomaly detection with isolation forests
-- Pattern recognition for recurring issues
-- Capacity planning predictions
-
-### 3. Advanced Visualizations
-
-- 3D network topology maps
-- Animated flow diagrams
-- AR/VR network visualization
-- Real-time geographic maps
-
-### 4. Reporting Automation
-
-- Scheduled report generation
-- Custom report templates
-- Email/Slack integration
-- Executive dashboards 

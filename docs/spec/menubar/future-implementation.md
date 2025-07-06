@@ -1,45 +1,6 @@
-# Menu Bar Application Specification
+# Menu Bar Application Specification: Future Implementation
 
-## Overview
-
-The menu bar application provides a persistent, lightweight interface for Network Stats on macOS. It runs continuously in the background, displaying real-time network status and providing quick access to statistics and settings.
-
-## Design Principles
-
-1. **Minimal Resource Usage**: < 1% CPU, < 30MB RAM
-2. **Instant Access**: All features within 2 clicks
-3. **Non-intrusive**: Clean, professional appearance
-4. **Real-time Updates**: Live status indicators
-5. **Native Feel**: Follows macOS design guidelines
-
-## Current Implementation
-
-### Architecture
-
-```python
-import rumps
-import asyncio
-import threading
-
-class NetworkStatsApp(rumps.App):
-    def __init__(self):
-        super().__init__("Net📶", icon="🌐", quit_button=None)
-        self.menu = ["Open Stats", None, "Quit"]
-        self.start_monitoring()
-    
-    def start_monitoring(self):
-        """Start background monitoring thread."""
-        self.loop = asyncio.new_event_loop()
-        self.monitor_thread = threading.Thread(
-            target=self._run_monitor,
-            daemon=True
-        )
-        self.monitor_thread.start()
-```
-
-## Future Implementation
-
-### Enhanced Menu Structure
+## Enhanced Menu Structure
 
 ```
 NetworkStats [Icon]
@@ -71,10 +32,10 @@ NetworkStats [Icon]
 ├── 📋 Export Report...
 ├── ℹ️  About NetworkStats
 └── 🚪 Quit
+
 ```
 
-### Icon System
-
+## Icon System
 ```python
 class StatusIcon:
     """Dynamic menu bar icon based on network status."""
@@ -110,10 +71,10 @@ class StatusIcon:
             # Optional: Add badge for alert count
             if self.alert_count > 0:
                 self.app.title = f"{self.ICONS[state]} {self.alert_count}"
+
 ```
 
-### Real-time Updates
-
+## Real-time Updates
 ```python
 class MenuUpdater:
     """Handle real-time menu updates."""
@@ -151,9 +112,10 @@ class MenuUpdater:
             return f"{int(delta/60)}m ago"
         else:
             return f"{int(delta/3600)}h ago"
+
 ```
 
-### Notification System
+## Notification System
 
 ```python
 import UserNotifications
@@ -188,11 +150,11 @@ class NotificationManager:
         # Handle notification response
         if notification.clicked:
             self.app.open_stats_for_target(target)
+
 ```
 
-### Advanced Features
-
-#### 1. Quick Actions
+## Advanced Features
+### 1. Quick Actions
 
 ```python
 class QuickActions:
@@ -212,9 +174,10 @@ class QuickActions:
             self.monitor.check_all_targets(),
             self.loop
         )
+
 ```
 
-#### 2. Status Bar Text
+### 2. Status Bar Text
 
 ```python
 class StatusBarDisplay:
@@ -236,9 +199,10 @@ class StatusBarDisplay:
             self.app.title = f"{avg_latency:.0f}ms"
         elif self.display_mode == 'custom':
             self.app.title = self.format_custom(stats)
+
 ```
 
-#### 3. Export Functionality
+### 3. Export Functionality
 
 ```python
 class ReportExporter:
@@ -270,175 +234,5 @@ class ReportExporter:
         
         # Create PDF with statistics and charts
         # ... implementation ...
+
 ```
-
-## Performance Optimization
-
-### Memory Management
-
-```python
-class MemoryEfficientMenu:
-    """Optimize memory usage for menu items."""
-    
-    def __init__(self):
-        self.menu_cache = {}
-        self.update_queue = asyncio.Queue(maxsize=100)
-        
-    def update_menu_item(self, path: str, value: str):
-        """Update menu item with caching."""
-        if path in self.menu_cache and self.menu_cache[path] == value:
-            return  # No change needed
-            
-        self.menu_cache[path] = value
-        # Batch updates
-        self.update_queue.put_nowait((path, value))
-        
-    async def process_updates(self):
-        """Process batched menu updates."""
-        updates = []
-        
-        # Collect updates
-        while not self.update_queue.empty():
-            updates.append(await self.update_queue.get())
-            
-        # Apply updates in single pass
-        if updates:
-            self._apply_menu_updates(updates)
-```
-
-### CPU Optimization
-
-```python
-class CPUOptimizedApp:
-    """Minimize CPU usage."""
-    
-    def __init__(self):
-        self.update_interval = 1.0  # Minimum update interval
-        self.last_update = 0
-        self.pending_updates = {}
-        
-    def schedule_update(self, key: str, data: dict):
-        """Schedule update with rate limiting."""
-        self.pending_updates[key] = data
-        
-        now = time.time()
-        if now - self.last_update >= self.update_interval:
-            self._flush_updates()
-            self.last_update = now
-```
-
-## Integration Points
-
-### 1. Statistics Window
-
-```python
-@rumps.clicked("Open Statistics...")
-def open_statistics(self, sender):
-    """Open the statistics window."""
-    # Launch Toga-based statistics window
-    if not hasattr(self, 'stats_window'):
-        self.stats_window = StatsWindow()
-    self.stats_window.show()
-```
-
-### 2. Settings Integration
-
-```python
-@rumps.clicked("Settings...")
-def open_settings(self, sender):
-    """Open settings window."""
-    if not hasattr(self, 'settings_window'):
-        self.settings_window = SettingsWindow(
-            on_save=self.reload_configuration
-        )
-    self.settings_window.show()
-```
-
-### 3. System Integration
-
-```python
-class SystemIntegration:
-    """macOS system integration."""
-    
-    def setup_launch_at_login(self):
-        """Configure launch at login."""
-        from LaunchServices import LSSharedFileListCreate
-        # ... implementation ...
-    
-    def handle_sleep_wake(self):
-        """Handle system sleep/wake events."""
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver_selector_name_object_(
-            self,
-            'systemDidWake:',
-            NSWorkspaceDidWakeNotification,
-            None
-        )
-```
-
-## Testing Strategy
-
-```python
-import pytest
-from unittest.mock import Mock, patch
-
-def test_menu_structure():
-    """Test menu hierarchy."""
-    app = NetworkStatsApp()
-    
-    # Verify menu structure
-    assert "Open Statistics..." in app.menu
-    assert "Settings..." in app.menu
-    assert "Quit" in app.menu
-
-def test_icon_updates():
-    """Test icon state changes."""
-    app = NetworkStatsApp()
-    icon_manager = StatusIcon(app)
-    
-    # Test state transitions
-    icon_manager.update_icon('all_good')
-    assert app.icon == '🟢'
-    
-    icon_manager.update_icon('all_down')
-    assert app.icon == '🔴'
-
-@patch('rumps.notification')
-def test_notifications(mock_notification):
-    """Test notification system."""
-    notifier = NotificationManager()
-    notifier.send_alert("Network Down", "8.8.8.8 is unreachable")
-    
-    mock_notification.assert_called_once()
-```
-
-## Accessibility
-
-### VoiceOver Support
-
-```python
-class AccessibleMenu:
-    """Ensure menu items are accessible."""
-    
-    def create_menu_item(self, title: str, action=None):
-        """Create accessible menu item."""
-        item = rumps.MenuItem(title)
-        
-        # Add accessibility description
-        if hasattr(item, '_menuitem'):
-            item._menuitem.setAccessibilityDescription_(
-                f"Network stats menu item: {title}"
-            )
-        
-        return item
-```
-
-## Future Enhancements
-
-1. **Touch Bar Support**: Quick stats on MacBook Pro Touch Bar
-2. **Widgets**: macOS widget for Today view
-3. **Siri Shortcuts**: "Hey Siri, what's my network uptime?"
-4. **Apple Watch**: Companion app for quick glances
-5. **iCloud Sync**: Sync settings across devices
-6. **Dark Mode**: Automatic theme switching
-7. **Localization**: Multi-language support
-8. **Custom Plugins**: Extension system for custom monitors 

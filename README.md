@@ -84,6 +84,18 @@ Settings live at ~/.config/networkstats/settings.toml.
 
 Merge → tag → draft release → publish → Intel & Silicon binaries land on Releases automatically.
 
+## Documentation
+
+Comprehensive product specifications are available in the `docs/spec/` directory:
+
+- [Product Overview](docs/spec/index.md) - High-level product specification
+- [Network Monitoring](docs/spec/network-monitoring.md) - Monitoring engine and native Python ping implementation
+- [Database](docs/spec/database.md) - SQLite/DuckDB storage architecture
+- [Menu Bar](docs/spec/menubar.md) - macOS menu bar application design
+- [Settings GUI](docs/spec/settings-gui.md) - Configuration interface specification
+- [Statistics & Visualization](docs/spec/statistics-visualization.md) - Data visualization and analytics
+- [Packaging & Deployment](docs/spec/packaging-deployment.md) - Build, sign, and distribute
+
 ---
 
 ### Next steps
