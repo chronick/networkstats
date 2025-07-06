@@ -89,43 +89,64 @@ Merge → tag → draft release → publish → Intel & Silicon binaries land on
 Comprehensive product specifications are available in the `docs/spec/` directory:
 
 - [Product Overview](docs/spec/index.md) - High-level product specification
-- [Network Monitoring](docs/spec/network-monitoring.md) - Monitoring engine and native Python ping implementation
-- [Database](docs/spec/database.md) - SQLite/DuckDB storage architecture
-- [Menu Bar](docs/spec/menubar.md) - macOS menu bar application design
-- [Settings GUI](docs/spec/settings-gui.md) - Configuration interface specification
-- [Statistics & Visualization](docs/spec/statistics-visualization.md) - Data visualization and analytics
-- [Packaging & Deployment](docs/spec/packaging-deployment.md) - Build, sign, and distribute
+- [Network Monitoring](docs/spec/network-monitoring/index.md) - Monitoring engine and native Python ping implementation
+- [Database](docs/spec/database/index.md) - SQLite/DuckDB storage architecture
+- [Menu Bar](docs/spec/menubar/index.md) - macOS menu bar application design
+- [Settings GUI](docs/spec/settings-gui/index.md) - Configuration interface specification
+- [Statistics & Visualization](docs/spec/statistics-visualization/index.md) - Data visualization and analytics
+- [Packaging & Deployment](docs/spec/packaging-deployment/index.md) - Build, sign, and distribute
 
 ---
 
-### Next steps
+## Phase 2 Features
 
-* 🔧 Flesh out the TODOs (alerting, UI polish, installer DMG).  
-* 🧩 Swap SQLite for **DuckDB** with the `motherduck` extension if you want super-fast queries.  
-* 📊 Replace Plotly with **Altair/Vega-Lite** if you prefer pure JSON spec charts.
+NetworkStats now includes the following advanced features:
 
-Happy hacking — and enjoy seamless dev in Cursor!
+### Native Python Ping (ICMP)
+- Uses a native Python implementation for ICMP ping, improving cross-platform compatibility and performance.
+- See [Network Monitoring Spec](docs/spec/network-monitoring/index.md) for details.
 
-## Enhanced Statistics & Visualization (Phase 2)
+### Settings GUI
+- User-friendly interface for configuring all aspects of the app.
+- Tabs include:
+  - **General**: Monitoring interval, launch at login, auto-update, log level.
+  - **Targets**: Add/edit/remove network targets, quick add, advanced options.
+  - **Alerts**: Enable/disable alerts, set thresholds for downtime, latency, packet loss, notification preferences, cooldowns.
+  - **Display**: Menu bar style, icon style, default timeframe, chart type, grid lines, animation, theme.
+  - **Advanced**: Database engine, data retention, performance (max workers, batch writes), network (IPv6, DNS), export/import/reset.
+- All settings are validated before saving. See [Settings GUI Spec](docs/spec/settings-gui/index.md) and [Tab Specifications](docs/spec/settings-gui/tab-specifications.md).
 
-NetworkStats now includes advanced visualizations and analytics:
+#### How to Use the Settings GUI
+- Open the Settings window from the menu bar or main app.
+- Navigate tabs to adjust settings.
+- Invalid settings will be highlighted and cannot be saved until fixed.
+- Settings are persisted to `~/.config/networkstats/settings.toml`.
 
-- **Chart Types:**
-  - Uptime (bar, line, area)
-  - Latency (percentiles, min/max, trend)
-  - Timeline (up/down events)
-  - Heatmap (hour/day patterns)
-  - Anomaly Detection (outlier highlighting)
-- **Summary Cards:**
-  - Uptime and Latency at a glance
-- **Export:**
-  - PDF, PNG, CSV, Excel, JSON
-- **Interactive Features:**
-  - Drill-down to detail views
-  - Real-time updates (auto-refresh)
-- **How to Use:**
-  - Select chart type and time range in the statistics window
-  - Use export button to save data or charts
-  - Click on chart points for detailed analysis
+### Alert System
+- Configurable alerts for downtime, high latency, and packet loss.
+- Notification options: sound, badge, Notification Center.
+- Adjustable thresholds and cooldowns.
+- Alerts can be toggled on/off per condition.
+- See [Settings GUI Spec](docs/spec/settings-gui/index.md) and [Network Monitoring Spec](docs/spec/network-monitoring/index.md).
 
-See [docs/spec/statistics-visualization/index.md](docs/spec/statistics-visualization/index.md) for full details.
+#### How to Use Alerts
+- Configure alert thresholds and notification preferences in the Settings GUI (Alerts tab).
+- Alerts will appear as system notifications and/or badges when triggered.
+
+### Enhanced Visualizations
+- Interactive charts: Uptime, Latency, Packet Loss, Anomaly, Timeline, Heatmap, Combined metrics.
+- Summary cards for Uptime and Latency.
+- Drill-down: Click on chart points for detailed views.
+- Real-time updates (auto-refresh).
+- Export data and charts as PDF, PNG, CSV, Excel, or JSON.
+- See [Statistics Visualization Spec](docs/spec/statistics-visualization/index.md).
+
+#### How to Use Visualizations
+- Open the statistics window from the menu bar or main app.
+- Select chart type, time range, and metrics.
+- Use the export button to save data or charts.
+- Click on chart points for drill-down analysis.
+
+---
+
+For more details, see the full product specifications in the `docs/spec/` directory.
