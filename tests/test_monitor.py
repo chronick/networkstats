@@ -35,3 +35,29 @@ async def test_ping_once_timeout(monkeypatch):
     monkeypatch.setattr(asyncio, "create_subprocess_exec", dummy_create_subprocess_exec)
     latency = await monitor._ping_once("bad.target", timeout=0.01)
     assert latency is None
+
+
+def test_monitor_once(monkeypatch):
+    # Patch _ping_once and record to avoid real pings and DB writes
+    async def fake_ping_once(*args, **kwargs):
+        return 42.0
+    monkeypatch.setattr(monitor, "_ping_once", fake_ping_once)
+    monkeypatch.setattr(monitor, "record", lambda *a, **k: None)
+    # Patch config to use a single target and short interval
+    monkeypatch.setattr(monitor, "cfg", {"targets": ["1.2.3.4"], "interval_sec": 0.01, "sqlite_path": ":memory:"})
+    # Should complete after one iteration
+    asyncio.run(monitor.monitor(once=True))
+
+
+def test_monitor_long_running(monkeypatch):
+    # Patch _ping_once and record to avoid real pings and DB writes
+    async def fake_ping_once(*args, **kwargs):
+        await asyncio.sleep(0.01)
+        return 42.0
+    monkeypatch.setattr(monitor, "_ping_once", fake_ping_once)
+    monkeypatch.setattr(monitor, "record", lambda *a, **k: None)
+    # Patch config to use a single target and short interval
+    monkeypatch.setattr(monitor, "cfg", {"targets": ["1.2.3.4"], "interval_sec": 0.01, "sqlite_path": ":memory:"})
+    # Should run for a short time and then be cancelled
+    with pytest.raises(asyncio.TimeoutError):
+        asyncio.run(asyncio.wait_for(monitor.monitor(), timeout=0.05))

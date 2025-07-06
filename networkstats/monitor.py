@@ -93,13 +93,14 @@ async def _ping_once(
         return None
 
 
-async def monitor(verbose: bool = False, quiet: bool = False, extra_ping_args: str = ""):
+async def monitor(verbose: bool = False, quiet: bool = False, extra_ping_args: str = "", once: bool = False):
     """Main async ping loop for all targets.
 
     Args:
         verbose: Pass -v to ping for verbose output.
         quiet: Pass -q to ping for quiet output.
         extra_ping_args: Extra arguments to pass to ping.
+        once: If True, run only one iteration and exit.
     """
     targets = cfg["targets"]
     interval = cfg["interval_sec"]
@@ -122,6 +123,8 @@ async def monitor(verbose: bool = False, quiet: bool = False, extra_ping_args: s
                     latency = result
                     log.debug(f"Result for {target}: latency={latency} ms, success={latency is not None}")
                     record(target, latency or 0.0, latency is not None)
+            if once:
+                break
             await asyncio.sleep(interval)
     except asyncio.CancelledError:
         log.info("Monitor cancelled, shutting down cleanly.")

@@ -39,6 +39,11 @@ def run(
         "--ping-args",
         help="Extra arguments to pass to ping (as a single string)",
     ),
+    once: bool = typer.Option(
+        False,
+        "--once",
+        help="Run the monitor loop only once and exit (for testing)",
+    ),
 ) -> None:
     """Run the ping monitor in foreground (CLI).
 
@@ -47,11 +52,12 @@ def run(
         verbose: Pass -v to ping for verbose output.
         quiet: Pass -q to ping for quiet output.
         extra_ping_args: Extra arguments to pass to ping.
+        once: Run the monitor loop only once and exit (for testing).
     """
     _configure_logging(log_level)
     logging.info("Starting network monitor")
     try:
-        asyncio.run(monitor(verbose=verbose, quiet=quiet, extra_ping_args=extra_ping_args))
+        asyncio.run(monitor(verbose=verbose, quiet=quiet, extra_ping_args=extra_ping_args, once=once))
     except KeyboardInterrupt:
         typer.echo("Bye!")
 
