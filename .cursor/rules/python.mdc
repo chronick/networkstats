@@ -18,6 +18,8 @@ Follow these rules for all Python code in this project.
 - Follow **PEP 8** for all Python code.
 - Use an autoformatter like `black` to ensure consistent formatting. The line length should be 88 characters.
 - Use `isort` to sort imports automatically. Imports should be grouped as follows: standard library, third-party libraries, and then local application imports.
+- Use `ruff` for linting (preferred for its speed over `pylint` or `flake8`).
+- Use `mypy` with strict settings for type checking.
 
 ### Naming Conventions (from PEP 8)
 
@@ -78,9 +80,11 @@ def my_function(arg1: int, arg2: str) -> bool:
 
 - Write tests for all new code.
 - Use `pytest` for writing and running tests.
+- Use `pytest-asyncio` for async testing.
 - Test files should be located in the `tests/` directory.
 - Test files should be named `test_*.py` or `*_test.py`.
 - Test functions should be named `test_*`.
+- Fast unit tests only; integration tests behind `-m integ`.
 - Include [pytest.mdc](mdc:.cursor/rules/pytest.mdc) when writing tests.
 
 ### Modern Python Features
@@ -90,8 +94,19 @@ def my_function(arg1: int, arg2: str) -> bool:
 - Use dataclasses (`@dataclass`) for classes that primarily store data.
 - Use context managers (`with` statement) for resources that need to be cleaned up (e.g., file handles, database connections).
 
+### Code Organization
+
+#### TODOs
+- Prefix with `# TODO(username):` to ease search and accountability.
+
+#### Comments
+- Write clear, concise comments that explain why, not what.
+- Update comments when code changes.
+
 ### Final Checks
 
 - Before committing code, ensure it is formatted with `black` and imports are sorted with `isort`.
 - Make sure all tests pass.
-- Ensure there are no linting errors (e.g., from `ruff`, `pylint`, or `flake8`). `ruff` is preferred for its speed. 
+- Ensure there are no linting errors from `ruff`.
+- Run `mypy` in strict mode and resolve type issues.
+- Verify that the code follows all the guidelines in this document. 

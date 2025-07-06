@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+### Application Architecture
+
+#### Directory Hygiene
+- Keep each module < 400 LOC.
+- Tests mirror package structure under `/tests`.
+
+#### Entry Points
+- Provide a `cli.py` using Typer for command-line interface.
+- Export GUI entry with `menubar.py` for desktop applications.
+
+#### Data Access
+- All DB I/O via `storage.py`; forbid raw SQL elsewhere.
+- Centralize data access patterns to maintain consistency.
+
+#### Async Programming
+- Prefer `asyncio` for I/O loops; never block the event loop.
+- Use `pytest-asyncio` for testing async code.
+
+#### Performance
+- Use Polars for analytic queries; avoid pandas where possible.
+- Profile code when performance is critical.
