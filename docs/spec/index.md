@@ -166,10 +166,10 @@ flowchart TD
 - ✅ Basic statistics view
 
 ### Phase 2: Enhanced Features (Q1 2025)
-- 🔲 Native Python ping implementation
-- 🔲 Settings GUI
-- 🔲 Alert system
-- 🔲 Enhanced visualizations
+- ✅ Native Python ping implementation
+- ✅ Settings GUI
+- ✅ Alert system
+- ✅ Enhanced visualizations
 
 ### Phase 3: Performance & Scale (Q2 2025)
 - 🔲 DuckDB migration

@@ -38,6 +38,7 @@ numpy = "<2.0"
 pandas = "^2.3.0"
 pyarrow = "^20.0.0"
 xlsxwriter = "^3.2.5"
+rumps = "^0.4.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.4.1"
