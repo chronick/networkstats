@@ -1,0 +1,21 @@
+[project]
+name = "networkstats"
+version = "0.1.0"
+description = "Menu-bar uptime monitor with Toga stats window"
+authors = [{name="Your Name"}]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "rumps",
+  "toga>=0.4.3",
+  "polars",
+  "plotly",
+  "typer[all]",
+]
+
+[project.scripts]
+netuptime = "networkstats.cli:app"
+
+[tool.pytest.ini_options]
+addopts = ""
+pythonpath = "."
