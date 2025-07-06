@@ -1,0 +1,193 @@
+---
+alwaysApply: false
+---
+# Feature Implementation Guidelines
+
+This rule provides guidelines for implementing features from specification documents in the network-stats project.
+
+## Core Principles
+
+1. **Iterative Development Cycle**
+   - Write failing tests first (TDD approach)
+   - Implement minimal code to pass tests
+   - Run tests frequently
+   - Refactor with confidence
+   - Repeat until feature is complete
+
+2. **Specification Adherence**
+   - Primary reference: specification documents in [docs/spec/](mdc:docs/spec/)
+   - Specs may have imperfections - research online when unclear
+   - Document any deviations from spec with rationale
+   - Update specs if significant changes are needed
+
+3. **Testing Philosophy**
+   - Tests are living documentation
+   - Tests can be modified, but with extreme caution
+   - Each change to tests should be justified
+   - Preserve test intent even when fixing implementation details
+
+## Development Workflow
+
+### 1. Pre-Implementation Phase
+- Read relevant spec documents thoroughly
+- Identify edge cases and potential issues
+- Research any unclear technical aspects online
+- Plan test scenarios based on spec
+
+### 2. Test-First Implementation
+```python
+# Example workflow for a new feature
+# 1. Write failing test
+def test_new_feature_basic_functionality():
+    """Test that new feature performs its basic function."""
+    result = new_feature.process(input_data)
+    assert result == expected_output
+
+# 2. Run test to confirm it fails
+# pytest tests/test_new_feature.py -v
+
+# 3. Implement minimal code to pass
+def process(input_data):
+    # Minimal implementation
+    return expected_output
+
+# 4. Run test again to confirm it passes
+# 5. Add more tests for edge cases
+# 6. Refactor and improve implementation
+```
+
+### 3. Testing Strategy
+- Unit tests for individual components
+- Integration tests for component interactions
+- Use pytest fixtures for common setup
+- Mock external dependencies appropriately
+- Run full test suite before committing
+
+### 4. Code Quality Standards
+Follow [python.mdc](mdc:.cursor/rules/python.mdc) and [pytest.mdc](mdc:.cursor/rules/pytest.mdc) for:
+- Code style and formatting (black, isort, ruff)
+- Type hints and mypy compliance
+- Docstring documentation
+- Test organization and naming
+
+### 5. Iterative Refinement
+- After initial implementation:
+  1. Run tests: `pytest tests/ -v`
+  2. Fix any failures
+  3. Check coverage: `pytest --cov=networkstats tests/`
+  4. Add tests for uncovered scenarios
+  5. Refactor for clarity and performance
+  6. Repeat until satisfied
+
+## Specification Document Navigation
+
+Key specification areas:
+- [Database](mdc:docs/spec/database/index.md) - Data storage and retrieval
+- [Menubar](mdc:docs/spec/menubar/index.md) - macOS menubar interface
+- [Network Monitoring](mdc:docs/spec/network-monitoring/index.md) - Core monitoring functionality
+- [Settings GUI](mdc:docs/spec/settings-gui/index.md) - Configuration interface
+- [Statistics Visualization](mdc:docs/spec/statistics-visualization/index.md) - Data presentation
+
+## Common Patterns
+
+### Configuration Management
+```python
+# Use config.py for all configuration
+from networkstats.config import Config
+
+config = Config()
+# Implement feature-specific config as needed
+```
+
+### Error Handling
+```python
+# Comprehensive error handling
+try:
+    result = risky_operation()
+except SpecificError as e:
+    logger.error(f"Operation failed: {e}")
+    # Graceful degradation
+    return default_value
+```
+
+### Logging
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Use appropriate log levels
+logger.debug("Detailed information for debugging")
+logger.info("General information")
+logger.warning("Warning messages")
+logger.error("Error messages")
+```
+
+## Testing Best Practices
+
+### Test Organization
+```python
+# tests/test_feature.py
+import pytest
+from networkstats.feature import Feature
+
+class TestFeature:
+    """Group related tests in classes."""
+    
+    @pytest.fixture
+    def feature_instance(self):
+        """Fixture for common setup."""
+        return Feature(test_config)
+    
+    def test_normal_operation(self, feature_instance):
+        """Test happy path."""
+        assert feature_instance.process(valid_input) == expected
+    
+    def test_edge_case(self, feature_instance):
+        """Test boundary conditions."""
+        assert feature_instance.process(edge_input) == edge_expected
+    
+    def test_error_handling(self, feature_instance):
+        """Test error scenarios."""
+        with pytest.raises(ExpectedError):
+            feature_instance.process(invalid_input)
+```
+
+### Mocking External Dependencies
+```python
+from unittest.mock import Mock, patch
+
+@patch('networkstats.monitor.ping')
+def test_network_check(mock_ping):
+    """Mock external network calls."""
+    mock_ping.return_value = {'latency': 10.5}
+    result = monitor.check_network()
+    assert result['status'] == 'online'
+```
+
+## Debugging and Troubleshooting
+
+1. **When Tests Fail**
+   - Read error messages carefully
+   - Use `pytest -vv` for verbose output
+   - Add `pytest.set_trace()` for debugging
+   - Check if spec has changed or was misunderstood
+
+2. **Performance Issues**
+   - Profile before optimizing
+   - Consider spec requirements for performance
+   - Document any performance trade-offs
+
+3. **Integration Problems**
+   - Verify component interfaces match spec
+   - Check for race conditions in async code
+   - Ensure proper resource cleanup
+
+## Continuous Improvement
+
+- Regularly review and update tests
+- Keep specifications synchronized with implementation
+- Document lessons learned in relevant spec documents
+- Contribute improvements back to spec documents
+
+Remember: The goal is working, well-tested software that meets user needs while maintaining code quality and developer productivity.
