@@ -137,3 +137,47 @@ def test_settings_window_display_advanced_tabs():
     tab_names = [tab.text for tab in app.tabs.content]
     assert 'Display' in tab_names
     assert 'Advanced' in tab_names
+
+def test_summary_card_creation():
+    from networkstats.gui.summary_card import SummaryCard
+    card = SummaryCard("Uptime", "percentage")
+    widget = card.create_widget()
+    assert widget is not None
+    assert card.value_label.text == "--"
+    card.update(99.5, 98.0)
+    assert card.value_label.text == "99.50%"
+    assert "↑" in card.trend_label.text or "↓" in card.trend_label.text or "No change" in card.trend_label.text
+    if hasattr(card, 'progress'):
+        assert card.progress.value == 99.5
+
+def test_summary_card_latency():
+    from networkstats.gui.summary_card import SummaryCard
+    card = SummaryCard("Latency", "ms")
+    card.create_widget()
+    card.update(15.2, 17.3)
+    assert card.value_label.text == "15.2 ms"
+    assert "↓" in card.trend_label.text
+
+def test_uptime_chart_bar_line_area():
+    from networkstats.gui.uptime_chart import UptimeChart
+    import polars as pl
+    class DummySource:
+        def get_uptime_data(self, timeframe, targets):
+            return pl.DataFrame({
+                'target': ['A', 'B'],
+                'uptime_pct': [99.9, 98.7],
+                'hour': [1, 2]
+            })
+    chart = UptimeChart(DummySource())
+    # Bar chart
+    chart.chart_type = 'bar'
+    html = chart.create_chart(3600)
+    assert 'html' in html
+    # Line chart
+    chart.chart_type = 'line'
+    html = chart.create_chart(3600)
+    assert 'html' in html
+    # Area chart
+    chart.chart_type = 'area'
+    html = chart.create_chart(3600)
+    assert 'html' in html

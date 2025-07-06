@@ -123,7 +123,6 @@ async def test_native_ping_timeout(monkeypatch):
     assert latency is None
 
 
-@pytest.mark.asyncio
 def test_can_use_raw_sockets_true(monkeypatch):
     from networkstats import monitor
     class DummySocket:
@@ -135,7 +134,6 @@ def test_can_use_raw_sockets_true(monkeypatch):
     assert monitor.can_use_raw_sockets() is True
 
 
-@pytest.mark.asyncio
 def test_can_use_raw_sockets_false(monkeypatch):
     from networkstats import monitor
     def raise_permission(*a, **k):

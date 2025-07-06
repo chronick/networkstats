@@ -35,6 +35,8 @@ tomli-w = "^1.2.0"
 pyobjc = "^11.1"
 toga = "^0.5.1"
 numpy = "<2.0"
+pandas = "^2.3.0"
+pyarrow = "^20.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.4.1"
@@ -49,3 +51,10 @@ pyyaml = "^6.0.2"
 
 [tool.poetry.scripts]
 networkstats = "networkstats.cli:app"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:Custom EventLoopPolicy instances have been deprecated:DeprecationWarning",
+    "ignore:Pack.padding is deprecated:DeprecationWarning",
+    "ignore::pytest.PytestUnraisableExceptionWarning"
+]

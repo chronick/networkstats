@@ -8,6 +8,13 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+app_instance = None  # Global reference to MenuApp
+
+def set_badge(text):
+    """Set the badge on the menubar app icon (for alert integration)."""
+    global app_instance
+    if app_instance and hasattr(app_instance, 'badge'):
+        app_instance.badge = text
 
 def start_asyncio_loop(loop):
     logger.debug("Starting asyncio loop thread")
@@ -30,6 +37,8 @@ def run_status_bar():
             logger.debug("Initializing MenuApp")
             super().__init__("Net📶", icon="🌐", quit_button=None)
             self.menu = ["Open Stats", None, "Quit"]
+            global app_instance
+            app_instance = self
 
         @rumps.clicked("Open Stats")
         def open_stats(self, _):

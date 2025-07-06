@@ -12,6 +12,7 @@ import struct
 import socket
 import select
 from typing import Optional
+from .alert_system import AlertSystem
 
 log = logging.getLogger(__name__)
 cfg = load()
@@ -98,6 +99,11 @@ async def _ping_once(
         return None
 
 
+def dummy_notify(msg):
+    log.info(f"ALERT: {msg}")
+
+alert_system = AlertSystem(cfg, dummy_notify)
+
 async def monitor(verbose: bool = False, quiet: bool = False, extra_ping_args: str = "", once: bool = False):
     """Main async ping loop for all targets.
 
@@ -125,10 +131,14 @@ async def monitor(verbose: bool = False, quiet: bool = False, extra_ping_args: s
                 if isinstance(result, Exception):
                     log.error(f"Error pinging {target}: {result}")
                     record(target, 0.0, False)
+                    # Alert on downtime
+                    await alert_system.check_conditions(target, success=False, latency=None, packet_loss=0)
                 else:
                     latency = result
                     log.debug(f"Result for {target}: latency={latency} ms, success={latency is not None}")
                     record(target, latency or 0.0, latency is not None)
+                    # For now, packet_loss is always 0 (stub)
+                    await alert_system.check_conditions(target, success=(latency is not None), latency=latency, packet_loss=0)
             if once:
                 break
             await asyncio.sleep(interval)
