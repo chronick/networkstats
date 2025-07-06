@@ -1,16 +1,36 @@
+[build-system]
+requires = ["poetry-core>=1.0.0", "setuptools<81"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "networkstats"
 version = "0.1.0"
-description = "Network uptime monitor CLI and GUI app."
-authors = ["Your Name <your@email.com>"]
+description = "A tool for monitoring and displaying network statistics."
+authors = ["Your Name <your.email@example.com>"]
 readme = "README.md"
 license = "MIT"
+repository = "https://github.com/yourusername/network-stats"
+homepage = "https://github.com/yourusername/network-stats"
+keywords = ["network", "statistics", "monitor"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+packages = [{ include = "networkstats" }]
+include = ["README.md", "LICENSE"]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.10,<3.13"
+setuptools = "<81"
 typer = "0.16.0"
 asyncio = "3.4.3"
 polars = "1.31.0"
+py2app = "^0.28.8"
+plotly = "^6.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.4.1"
@@ -18,15 +38,7 @@ pytest-asyncio = "1.0.0"
 black = "25.1.0"
 ruff = "0.12.2"
 mypy = "1.16.1"
-
-[build-system]
-requires = [
-    "poetry-core>=1.0.0",
-    "setuptools",
-    "wheel",
-    "py2app"
-]
-build-backend = "poetry.core.masonry.api"
+pyinstaller = "^6.0.0"
 
 [tool.poetry.scripts]
 networkstats = "networkstats.cli:app"

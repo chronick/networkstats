@@ -12,10 +12,32 @@ poetry install
 
 ## Running the App
 
-To run the app:
+### CLI Mode
+
+To run the CLI app:
 
 ```bash
-poetry run python main.py
+poetry run networkstats run [OPTIONS]
+```
+
+**Options:**
+- `--log-level [LEVEL]`  Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default: WARNING
+- `-v`, `--verbose`      Pass -v to ping for verbose output (overrides log level mapping)
+- `-q`, `--quiet`        Pass -q to ping for quiet output (overrides log level mapping)
+- `--ping-args [ARGS]`   Extra arguments to pass to ping (as a single string)
+
+**Example:**
+```bash
+poetry run networkstats run --log-level INFO -v --ping-args "-c 3"
+```
+
+### GUI Mode (macOS Menu Bar)
+
+To run the GUI menu bar app (macOS only):
+
+```bash
+scripts/build_app.sh        # Build the .app for your architecture
+open dist/NetworkStats.app  # Launches the menu bar app
 ```
 
 ## Running Tests
@@ -46,15 +68,17 @@ poetry add <package>
 ```bash
 git clone https://github.com/you/net-uptime-app
 cd net-uptime-app
-scripts/build_app.sh        # local .app for your arch
-open dist/NetworkStats.app          # runs in menu bar
+poetry install
 
-CLI mode:
+# CLI mode
+poetry run networkstats run
 
-netuptime run
+# GUI mode (macOS only)
+scripts/build_app.sh
+open dist/NetworkStats.app
+```
 
 Settings live at ~/.config/networkstats/settings.toml.
-```
 
 ## Packaging
 

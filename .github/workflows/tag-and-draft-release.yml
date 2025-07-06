@@ -15,11 +15,10 @@ jobs:
         with:
           fetch-depth: 0    # needed to push tags
 
-      - name: Get version from setup.py
-        id: get_version
+      - name: Get version from pyproject.toml
         run: |
-          VERSION=$(grep -Po '(?<=version=\")[0-9]+\.[0-9]+\.[0-9]+' setup.py)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          VERSION=$(grep -Po 'version = "\K[0-9]+\.[0-9]+\.[0-9]+' pyproject.toml)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create Git tag
         run: |
