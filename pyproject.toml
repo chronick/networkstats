@@ -37,6 +37,7 @@ toga = "^0.5.1"
 numpy = "<2.0"
 pandas = "^2.3.0"
 pyarrow = "^20.0.0"
+xlsxwriter = "^3.2.5"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.4.1"
