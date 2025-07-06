@@ -20,7 +20,12 @@ ruff = "*"
 mypy = "*"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = [
+    "poetry-core>=1.0.0",
+    "setuptools",
+    "wheel",
+    "py2app"
+]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
