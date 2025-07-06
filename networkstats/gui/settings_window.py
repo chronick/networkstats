@@ -487,6 +487,87 @@ class SettingsWindow(toga.App):
             ],
             style=Pack(flex=1)
         )
-        main_box = toga.Box(children=[self.tabs], style=Pack(direction=COLUMN, margin=10))
+        # Error label for validation feedback
+        self.error_label = toga.Label('', style=Pack(color='#FF0000', margin=10))
+        # Save button
+        self.save_btn = toga.Button('Save', on_press=self.on_save_clicked, style=Pack(width=100, margin=10))
+        # Main layout
+        main_box = toga.Box(children=[self.tabs, self.error_label, self.save_btn], style=Pack(direction=COLUMN, margin=10))
         self.main_window.content = main_box
-        self.main_window.show() 
+        self.main_window.show()
+
+    def on_save_clicked(self, widget):
+        from .settings_validator import SettingsValidator
+        # Gather settings from all tabs
+        settings = self.collect_settings()
+        errors = SettingsValidator.validate_settings(settings)
+        if errors:
+            self.error_label.text = '\n'.join(errors)
+        else:
+            self.error_label.text = ''
+            # Save settings to config_manager
+            if self.config_manager is not None:
+                self.config_manager.update(settings)
+            if self.on_save:
+                self.on_save(settings)
+            self.unsaved_changes = False
+            self.main_window.info_dialog('Settings Saved', 'Settings have been saved successfully.')
+
+    def collect_settings(self):
+        # Collect settings from all controls in all tabs
+        # General
+        settings = {}
+        settings['interval_sec'] = int(self.interval_input.value)
+        settings['launch_at_login'] = bool(self.launch_at_login.value)
+        settings['auto_update'] = bool(self.auto_update.value)
+        settings['log_level'] = self.log_level.value
+        # Targets
+        targets = []
+        for row in self.target_table.data:
+            address, name = row
+            targets.append({'address': address, 'name': name, 'protocol': 'ICMP', 'port': 0, 'timeout': 5.0, 'tags': []})
+        settings['targets'] = targets
+        # Alerts
+        settings['alerts'] = {
+            'enabled': bool(self.enable_alerts.value),
+            'downtime': {
+                'enabled': bool(self.alert_on_downtime.value),
+                'minutes': int(self.downtime_threshold.value)
+            },
+            'latency': {
+                'enabled': bool(self.alert_on_latency.value),
+                'ms': int(self.latency_threshold.value)
+            },
+            'packet_loss': {
+                'enabled': bool(self.alert_on_loss.value),
+                'percent': int(self.loss_threshold.value)
+            },
+            'sound': bool(self.notif_sound.value),
+            'badge': bool(self.notif_badge.value),
+            'notification_center': bool(self.notif_center.value),
+            'cooldown_minutes': int(self.alert_cooldown.value)
+        }
+        # Display
+        settings['display'] = {
+            'menubar_style': self.menubar_style.value,
+            'icon_style': self.icon_style.value,
+            'default_timeframe': self.default_timeframe.value,
+            'chart_type': self.chart_type.value,
+            'show_grid': bool(self.show_grid.value),
+            'animate_charts': bool(self.animate_charts.value),
+            'theme': self.theme.value
+        }
+        # Advanced
+        settings['database'] = {
+            'engine': self.db_engine.value,
+            'retention_days': int(self.data_retention.value)
+        }
+        settings['performance'] = {
+            'max_workers': int(self.max_workers.value),
+            'batch_writes': bool(self.batch_writes.value)
+        }
+        settings['network'] = {
+            'ipv6': bool(self.ipv6_enabled.value),
+            'dns_resolver': self.dns_resolver.value
+        }
+        return settings 
