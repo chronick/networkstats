@@ -1,28 +1,14 @@
 import logging
 import logging.handlers
 import os
+import sys
+import argparse
 
 # --- macOS unified‑logging support ----------------------------------------
 try:
     from Foundation import NSLog  # PyObjC gives access to NSLog()
 except ModuleNotFoundError:       # (will be bundled automatically by pyinstaller/briefcase)
     NSLog = None
-
-class MacConsoleHandler(logging.Handler):
-    """
-    A logging.Handler that forwards records to macOS’s unified logging
-    (visible in Console.app) via Foundation.NSLog().
-    """
-    def emit(self, record: logging.LogRecord) -> None:
-        # Skip if PyObjC isn’t available (e.g., on CI runners)
-        if NSLog is None:
-            return
-        try:
-            msg = self.format(record)
-            # NSLog uses printf‑style format strings; %@ is an NSString placeholder.
-            NSLog("%@", msg)
-        except Exception:
-            self.handleError(record)
 
 def setup_logging() -> None:
     """
@@ -39,13 +25,20 @@ def setup_logging() -> None:
     syslog_handler.setFormatter(fmt)
     root.addHandler(syslog_handler)
 
-        # macOS Console.app / unified logging
+    # macOS Console.app / unified logging
     if NSLog is not None:
+        class MacConsoleHandler(logging.Handler):
+            def emit(self, record: logging.LogRecord) -> None:
+                if NSLog is None:
+                    return
+                try:
+                    msg = self.format(record)
+                    NSLog("%@", msg)
+                except Exception:
+                    self.handleError(record)
         ns_handler = MacConsoleHandler()
         ns_handler.setFormatter(fmt)
         root.addHandler(ns_handler)
-
-    # 3️⃣  local log file for long‑term inspection
 
     # 2️⃣  local log file for long‑term inspection
     log_dir = os.path.expanduser("~/Library/Logs/NetworkStats")
@@ -59,6 +52,24 @@ def main():
     logger = logging.getLogger('NetworkStats')
     logger.info("Network‑Stats app started")
 
+    parser = argparse.ArgumentParser(description="NetworkStats App Launcher")
+    parser.add_argument('--settings', action='store_true', help='Launch Settings GUI')
+    parser.add_argument('--stats', action='store_true', help='Launch Statistics Window')
+    parser.add_argument('--menubar', action='store_true', help='Launch Menu Bar App (default)')
+    args = parser.parse_args()
+
+    if args.settings:
+        # Launch Settings GUI
+        from networkstats.gui.settings_window import SettingsWindow
+        SettingsWindow().main_loop()
+    elif args.stats:
+        # Launch Statistics Window
+        from networkstats.gui.stats_window import StatsWindow
+        StatsWindow().main_loop()
+    else:
+        # Launch Menu Bar App (default)
+        from networkstats.menubar import run_status_bar
+        run_status_bar()
 
 if __name__ == "__main__":
     main()
