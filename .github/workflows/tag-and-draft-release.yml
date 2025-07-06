@@ -1,0 +1,38 @@
+name: Tag & Draft Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  tag_and_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write    # needed to push tags & create releases
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0    # needed to push tags
+
+      - name: Get version from setup.py
+        id: get_version
+        run: |
+          VERSION=$(grep -Po '(?<=version=\")[0-9]+\.[0-9]+\.[0-9]+' setup.py)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag v${{ steps.get_version.outputs.version }}
+          git push origin v${{ steps.get_version.outputs.version }}
+
+      - name: Create draft GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: Release v${{ steps.get_version.outputs.version }}
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
