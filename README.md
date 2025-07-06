@@ -1,8 +1,45 @@
-# Net-Uptime-App 📶
+# Network Stats
 
-> Menu-bar utility that records ping latency & uptime, stores it in
-> SQLite, crunches stats with **Polars**, and shows pretty charts in a
-> **Toga** window.
+A network uptime monitor CLI and GUI app.
+
+## Setup
+
+Install dependencies:
+
+```bash
+poetry install
+```
+
+## Running the App
+
+To run the app:
+
+```bash
+poetry run python main.py
+```
+
+## Running Tests
+
+```bash
+poetry run pytest
+```
+
+## Adding Dependencies
+
+```bash
+poetry add <package>
+```
+
+## Development
+
+- Use `poetry shell` to activate the virtual environment.
+- Use `poetry add` and `poetry remove` to manage dependencies.
+- Use `poetry update` to update dependencies.
+
+## Notes
+
+- This project uses [Poetry](https://python-poetry.org/) for dependency and environment management.
+- Do not use `pip` or `uv` for dependency management.
 
 ## Quick start
 
@@ -18,27 +55,6 @@ netuptime run
 
 Settings live at ~/.config/networkstats/settings.toml.
 ```
-
-## Development
-
-- **Dependency management:** This project uses [uv](https://github.com/astral-sh/uv) for Python package management.
-  - To install dependencies:
-    ```bash
-    uv pip install -r requirements.txt
-    ```
-  - To add a new dependency:
-    ```bash
-    uv pip install <package>
-    ```
-  - To create a new virtual environment:
-    ```bash
-    uv venv venv && source venv/bin/activate
-    ```
-- `cursor-rules.mdc` keeps commit style consistent.
-- `pytest -q` runs unit tests.
-- `black . && ruff . && mypy networkstats` before every PR.
-
-> **Note:** `requirements.txt` is only used for py2app packaging. For all development, use `uv` and `pyproject.toml`.
 
 ## Packaging
 

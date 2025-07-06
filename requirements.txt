@@ -1,6 +1,0 @@
-rumps
-toga>=0.4.3
-polars
-plotly
-typer[all]
-py2app 

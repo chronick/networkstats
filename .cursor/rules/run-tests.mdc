@@ -1,5 +1,5 @@
-# Running Tests (uv + Pytest + Black)
-This is a cursor command to run formatting and tests for this python project using uv instead of Poetry.
+# Running Tests (Poetry + Pytest + Black)
+This is a cursor command to run formatting and tests for this python project using Poetry instead of uv.
 You are instructed to run these tests without further prompting.
 
 ## Instructions
@@ -12,22 +12,22 @@ IMPORTANT: Run these commands in order and follow these steps exactly.
 
 2. **Install dependencies (including dev dependencies):**
    ```sh
-   uv sync
+   poetry install
    ```
 
 3. **Fix formatting issues with black:**
    ```sh
-   uv run black .
+   poetry run black .
    ```
    - Fix any issues reported by black before proceeding.
 
 4. **Run unit tests:**
    ```sh
-   uv run pytest
+   poetry run pytest
    ```
    - To run a specific test file or function:
      ```sh
-     uv run pytest tests/test_example.py::test_function
+     poetry run pytest tests/test_example.py::test_function
      ```
 
 5. **Fix any issues related to test failures.**
@@ -37,23 +37,18 @@ IMPORTANT: Run these commands in order and follow these steps exactly.
 6. **(Optional) Check test coverage:**
    - If using [pytest-cov](mdc:https:/pytest-cov.readthedocs.io/en/latest):
      ```sh
-     uv run pytest --cov=src/workbrain
+     poetry run pytest --cov=networkstats
      ```
 
 ## Example
 ```sh
 cd <project-root>
-uv sync
-uv run black .
-uv run pytest
+poetry install
+poetry run black .
+poetry run pytest
 ```
 
 ## Tips & Best Practices
-- Use `uv run` to ensure all commands use the correct virtual environment.
-- Keep your dependencies up to date with `uv pip install -U <package>` or `uv pip install -r requirements.txt`.
-- Use pre-commit hooks to automate formatting with black.
-
-## Tips & Best Practices
-- Use `uv run` to ensure all commands use the correct virtual environment.
-- Keep your dependencies up to date with `uv sync`.
+- Use `poetry run` to ensure all commands use the correct virtual environment.
+- Keep your dependencies up to date with `poetry update`.
 - Use pre-commit hooks to automate formatting with black.

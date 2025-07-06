@@ -1,35 +1,27 @@
-[project]
+[tool.poetry]
 name = "networkstats"
 version = "0.1.0"
-description = "Menu-bar uptime monitor with Toga stats window"
-authors = [{name="Your Name"}]
+description = "Network uptime monitor CLI and GUI app."
+authors = ["Your Name <your@email.com>"]
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = [
-  "rumps",
-  "toga>=0.4.3",
-  "polars",
-  "plotly",
-  "typer",
-  "tomli_w",
-]
+license = "MIT"
 
-[project.scripts]
-netuptime = "networkstats.cli:app"
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+typer = "*"
+asyncio = "*"
+polars = "*"
 
-[tool.pytest.ini_options]
-addopts = ""
-pythonpath = "."
-
-[tool.uv]
-package = true
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-asyncio = "*"
+black = "*"
+ruff = "*"
+mypy = "*"
 
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
-[project.optional-dependencies]
-test = [
-  "pytest",
-  "pytest-asyncio"
-]
+[tool.poetry.scripts]
+networkstats = "networkstats.cli:app"
