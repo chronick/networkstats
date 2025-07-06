@@ -1,8 +1,4 @@
-import pytest
 from networkstats import config
-from pathlib import Path
-import shutil
-
 
 def test_load_creates_default(tmp_path, monkeypatch):
     cfg_file = tmp_path / "settings.toml"

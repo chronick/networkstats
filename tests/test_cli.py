@@ -1,4 +1,3 @@
-import pytest
 from typer.testing import CliRunner
 from networkstats.cli import app
 

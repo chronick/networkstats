@@ -1,8 +1,8 @@
-import pytest
+import pytest  # type: ignore
 
 try:
-    from networkstats.gui.window import StatsWindow
-    import toga
+    from networkstats.gui.window import StatsWindow  # noqa: F401
+    import toga  # type: ignore 
 except ImportError:
     StatsWindow = None
 

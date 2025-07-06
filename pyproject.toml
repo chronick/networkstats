@@ -10,7 +10,8 @@ dependencies = [
   "toga>=0.4.3",
   "polars",
   "plotly",
-  "typer[all]",
+  "typer",
+  "tomli_w",
 ]
 
 [project.scripts]
@@ -19,3 +20,16 @@ netuptime = "networkstats.cli:app"
 [tool.pytest.ini_options]
 addopts = ""
 pythonpath = "."
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-asyncio"
+]
