@@ -95,8 +95,38 @@ def test_settings_validator_target_valid():
 def test_settings_validator_settings():
     valid_settings = {
         'interval_sec': 30,
-        'targets': ['8.8.8.8'],
-        'alerts': {'downtime': {'minutes': 5}},
+        'targets': [{'address': '8.8.8.8', 'name': '', 'protocol': 'ICMP', 'port': 0, 'timeout': 5.0, 'tags': []}],
+        'alerts': {
+            'enabled': True,
+            'downtime': {'enabled': True, 'minutes': 5},
+            'latency': {'enabled': True, 'ms': 100},
+            'packet_loss': {'enabled': True, 'percent': 10},
+            'sound': True,
+            'badge': True,
+            'notification_center': True,
+            'cooldown_minutes': 15
+        },
+        'display': {
+            'menubar_style': 'Icon only',
+            'icon_style': 'Emoji (🌐 🟢 🟡 🔴)',
+            'default_timeframe': '24 hours',
+            'chart_type': 'Bar chart',
+            'show_grid': True,
+            'animate_charts': True,
+            'theme': 'System'
+        },
+        'database': {
+            'engine': 'SQLite',
+            'retention_days': 30
+        },
+        'performance': {
+            'max_workers': 10,
+            'batch_writes': True
+        },
+        'network': {
+            'ipv6': True,
+            'dns_resolver': 'System'
+        }
     }
     errors = SettingsValidator.validate_settings(valid_settings)
     assert errors == []
@@ -104,11 +134,24 @@ def test_settings_validator_settings():
         'interval_sec': 2,
         'targets': [],
         'alerts': {'downtime': {'minutes': 0}},
+        'display': {'default_timeframe': 'Invalid', 'chart_type': 'Invalid', 'theme': 'Invalid', 'menubar_style': 'Invalid', 'icon_style': 'Invalid'},
+        'database': {'engine': 'Invalid', 'retention_days': 0},
+        'performance': {'max_workers': 0, 'batch_writes': True},
+        'network': {'ipv6': True, 'dns_resolver': 'Invalid'}
     }
     errors = SettingsValidator.validate_settings(invalid_settings)
     assert 'Check interval must be at least 5 seconds' in errors
     assert 'At least one target must be configured' in errors
     assert 'Downtime threshold must be at least 1 minute' in errors
+    assert 'Default timeframe must be one of: Last hour, 24 hours, 7 days, 30 days' in errors
+    assert 'Chart type must be one of: Bar chart, Line chart, Area chart, Heatmap' in errors
+    assert 'Theme must be one of: System, Light, Dark' in errors
+    assert 'Menu bar style must be a valid option' in errors
+    assert 'Icon style must be a valid option' in errors
+    assert 'Database engine must be SQLite or DuckDB' in errors
+    assert 'Data retention must be at least 1 day' in errors
+    assert 'Max workers must be at least 1' in errors
+    assert 'DNS resolver must be a valid option or a valid IP address' in errors
 
 def test_configuration_manager(tmp_path):
     config_path = tmp_path / 'settings.json'
