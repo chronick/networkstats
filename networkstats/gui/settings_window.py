@@ -314,6 +314,167 @@ class SettingsWindow(toga.App):
         box.add(cooldown_box)
         return box
 
+    def create_display_tab(self):
+        box = toga.Box(style=Pack(direction=COLUMN, margin=10))
+        # Menu bar display
+        menubar_box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+        menubar_box.add(toga.Label('Menu Bar Display:', style=Pack(margin_bottom=5)))
+        self.menubar_style = toga.Selection(
+            items=[
+                'Icon only',
+                'Icon + Status',
+                'Icon + Uptime %',
+                'Icon + Latency',
+                'Text only'
+            ],
+            value=(self.config_manager.get('display', {}).get('menubar_style', 'Icon only') if self.config_manager else 'Icon only'),
+            style=Pack(width=200)
+        )
+        # Icon style
+        self.icon_style = toga.Selection(
+            items=[
+                'Emoji (🌐 🟢 🟡 🔴)',
+                'Classic (monochrome)',
+                'Modern (colored)',
+                'Minimal (dots)'
+            ],
+            value=(self.config_manager.get('display', {}).get('icon_style', 'Emoji (🌐 🟢 🟡 🔴)') if self.config_manager else 'Emoji (🌐 🟢 🟡 🔴)'),
+            style=Pack(width=200)
+        )
+        # Statistics window
+        stats_box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+        stats_box.add(toga.Label('Statistics Window:', style=Pack(margin_bottom=5)))
+        self.default_timeframe = toga.Selection(
+            items=['Last hour', '24 hours', '7 days', '30 days'],
+            value=(self.config_manager.get('display', {}).get('default_timeframe', '24 hours') if self.config_manager else '24 hours'),
+            style=Pack(width=150)
+        )
+        self.chart_type = toga.Selection(
+            items=['Bar chart', 'Line chart', 'Area chart', 'Heatmap'],
+            value=(self.config_manager.get('display', {}).get('chart_type', 'Bar chart') if self.config_manager else 'Bar chart'),
+            style=Pack(width=150)
+        )
+        self.show_grid = toga.Switch(
+            'Show grid lines',
+            value=(self.config_manager.get('display', {}).get('show_grid', True) if self.config_manager else True)
+        )
+        self.animate_charts = toga.Switch(
+            'Animate chart transitions',
+            value=(self.config_manager.get('display', {}).get('animate_charts', True) if self.config_manager else True)
+        )
+        # Theme
+        theme_box = toga.Box(style=Pack(direction="row", margin=5))
+        theme_box.add(toga.Label('Theme:', style=Pack(width=150)))
+        self.theme = toga.Selection(
+            items=['System', 'Light', 'Dark'],
+            value=(self.config_manager.get('display', {}).get('theme', 'System') if self.config_manager else 'System'),
+            style=Pack(width=100)
+        )
+        theme_box.add(self.theme)
+        # Add all to box
+        box.add(menubar_box)
+        box.add(self.menubar_style)
+        box.add(toga.Divider())
+        box.add(self.icon_style)
+        box.add(toga.Divider())
+        box.add(stats_box)
+        box.add(self.default_timeframe)
+        box.add(self.chart_type)
+        box.add(self.show_grid)
+        box.add(self.animate_charts)
+        box.add(toga.Divider())
+        box.add(theme_box)
+        return box
+
+    def create_advanced_tab(self):
+        box = toga.Box(style=Pack(direction=COLUMN, margin=10))
+        # Database settings
+        db_box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+        db_box.add(toga.Label('Database:', style=Pack(margin_bottom=5)))
+        self.db_engine = toga.Selection(
+            items=['SQLite', 'DuckDB'],
+            value=(self.config_manager.get('database', {}).get('engine', 'SQLite') if self.config_manager else 'SQLite'),
+            style=Pack(width=120)
+        )
+        retention_box = toga.Box(style=Pack(direction="row", margin=5))
+        retention_box.add(toga.Label('Keep data for:', style=Pack(width=150)))
+        self.data_retention = toga.NumberInput(
+            value=(self.config_manager.get('database', {}).get('retention_days', 30) if self.config_manager else 30),
+            min=1,
+            max=365,
+            step=1,
+            style=Pack(width=60)
+        )
+        retention_box.add(self.data_retention)
+        retention_box.add(toga.Label('days'))
+        # Performance
+        perf_box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+        perf_box.add(toga.Label('Performance:', style=Pack(margin_bottom=5)))
+        workers_box = toga.Box(style=Pack(direction="row", margin=5))
+        workers_box.add(toga.Label('Max workers:', style=Pack(width=150)))
+        self.max_workers = toga.NumberInput(
+            value=(self.config_manager.get('performance', {}).get('max_workers', 10) if self.config_manager else 10),
+            min=1,
+            max=50,
+            step=1,
+            style=Pack(width=60)
+        )
+        workers_box.add(self.max_workers)
+        self.batch_writes = toga.Switch(
+            'Enable batch database writes',
+            value=(self.config_manager.get('performance', {}).get('batch_writes', True) if self.config_manager else True)
+        )
+        # Network
+        net_box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+        net_box.add(toga.Label('Network:', style=Pack(margin_bottom=5)))
+        self.ipv6_enabled = toga.Switch(
+            'Enable IPv6',
+            value=(self.config_manager.get('network', {}).get('ipv6', True) if self.config_manager else True)
+        )
+        dns_box = toga.Box(style=Pack(direction="row", margin=5))
+        dns_box.add(toga.Label('DNS resolver:', style=Pack(width=150)))
+        self.dns_resolver = toga.Selection(
+            items=['System', 'Google (8.8.8.8)', 'Cloudflare (1.1.1.1)', 'Custom'],
+            value=(self.config_manager.get('network', {}).get('dns_resolver', 'System') if self.config_manager else 'System'),
+            style=Pack(width=180)
+        )
+        dns_box.add(self.dns_resolver)
+        # Export/Import
+        data_box = toga.Box(style=Pack(direction="row", margin=10))
+        self.export_config_btn = toga.Button(
+            'Export Config',
+            on_press=self.export_config if hasattr(self, 'export_config') else None,
+            style=Pack(width=120)
+        )
+        self.import_config_btn = toga.Button(
+            'Import Config',
+            on_press=self.import_config if hasattr(self, 'import_config') else None,
+            style=Pack(width=120)
+        )
+        self.reset_btn = toga.Button(
+            'Reset to Defaults',
+            on_press=self.reset_to_defaults if hasattr(self, 'reset_to_defaults') else None,
+            style=Pack(width=120)
+        )
+        data_box.add(self.export_config_btn)
+        data_box.add(self.import_config_btn)
+        data_box.add(self.reset_btn)
+        # Add all to box
+        box.add(db_box)
+        box.add(self.db_engine)
+        box.add(retention_box)
+        box.add(toga.Divider())
+        box.add(perf_box)
+        box.add(workers_box)
+        box.add(self.batch_writes)
+        box.add(toga.Divider())
+        box.add(net_box)
+        box.add(self.ipv6_enabled)
+        box.add(dns_box)
+        box.add(toga.Divider())
+        box.add(data_box)
+        return box
+
     def startup(self):
         self.main_window = toga.MainWindow(title='NetworkStats Settings')
         self.tabs = toga.OptionContainer(
@@ -321,8 +482,8 @@ class SettingsWindow(toga.App):
                 ('General', self.create_general_tab()),
                 ('Targets', self.create_targets_tab()),
                 ('Alerts', self.create_alerts_tab()),
-                ('Display', toga.Label('Display options (coming soon)')),
-                ('Advanced', toga.Label('Advanced settings (coming soon)')),
+                ('Display', self.create_display_tab()),
+                ('Advanced', self.create_advanced_tab()),
             ],
             style=Pack(flex=1)
         )

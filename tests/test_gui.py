@@ -79,3 +79,61 @@ def test_target_editor_fields():
     assert int(editor.port_input.value) == 0
     assert float(editor.timeout_input.value) == 5.0
     assert 'foo' in editor.tags_input.value
+
+from networkstats.gui.settings_validator import SettingsValidator
+import pathlib
+from networkstats.configuration_manager import ConfigurationManager
+
+def test_settings_validator_target_valid():
+    valid, msg = SettingsValidator.validate_target('8.8.8.8')
+    assert valid is True
+    assert msg == ''
+    valid, msg = SettingsValidator.validate_target('invalid..address')
+    assert valid is False
+    assert 'Invalid' in msg or 'Cannot resolve' in msg
+
+def test_settings_validator_settings():
+    valid_settings = {
+        'interval_sec': 30,
+        'targets': ['8.8.8.8'],
+        'alerts': {'downtime': {'minutes': 5}},
+    }
+    errors = SettingsValidator.validate_settings(valid_settings)
+    assert errors == []
+    invalid_settings = {
+        'interval_sec': 2,
+        'targets': [],
+        'alerts': {'downtime': {'minutes': 0}},
+    }
+    errors = SettingsValidator.validate_settings(invalid_settings)
+    assert 'Check interval must be at least 5 seconds' in errors
+    assert 'At least one target must be configured' in errors
+    assert 'Downtime threshold must be at least 1 minute' in errors
+
+def test_configuration_manager(tmp_path):
+    config_path = tmp_path / 'settings.json'
+    cm = ConfigurationManager(config_path)
+    # Defaults loaded
+    assert cm.get('interval_sec') == 30
+    # Set and get
+    cm.set('interval_sec', 42)
+    assert cm.get('interval_sec') == 42
+    # Save and reload
+    cm.save()
+    cm2 = ConfigurationManager(config_path)
+    assert cm2.get('interval_sec') == 42
+    # Dot notation
+    cm.set('alerts.downtime.minutes', 7)
+    assert cm.get('alerts.downtime.minutes') == 7
+    cm.save()
+    cm3 = ConfigurationManager(config_path)
+    assert cm3.get('alerts.downtime.minutes') == 7
+
+def test_settings_window_display_advanced_tabs():
+    if SettingsWindow is None or import_error:
+        pytest.skip(f"Toga or SettingsWindow not installed: {import_error}")
+    app = SettingsWindow(config_manager={})
+    app.startup()
+    tab_names = [tab.text for tab in app.tabs.content]
+    assert 'Display' in tab_names
+    assert 'Advanced' in tab_names
