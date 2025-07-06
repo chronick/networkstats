@@ -105,3 +105,27 @@ Comprehensive product specifications are available in the `docs/spec/` directory
 * 📊 Replace Plotly with **Altair/Vega-Lite** if you prefer pure JSON spec charts.
 
 Happy hacking — and enjoy seamless dev in Cursor!
+
+## Enhanced Statistics & Visualization (Phase 2)
+
+NetworkStats now includes advanced visualizations and analytics:
+
+- **Chart Types:**
+  - Uptime (bar, line, area)
+  - Latency (percentiles, min/max, trend)
+  - Timeline (up/down events)
+  - Heatmap (hour/day patterns)
+  - Anomaly Detection (outlier highlighting)
+- **Summary Cards:**
+  - Uptime and Latency at a glance
+- **Export:**
+  - PDF, PNG, CSV, Excel, JSON
+- **Interactive Features:**
+  - Drill-down to detail views
+  - Real-time updates (auto-refresh)
+- **How to Use:**
+  - Select chart type and time range in the statistics window
+  - Use export button to save data or charts
+  - Click on chart points for detailed analysis
+
+See [docs/spec/statistics-visualization/index.md](docs/spec/statistics-visualization/index.md) for full details.
