@@ -1,0 +1,97 @@
+---
+description: 
+globs: **/*.py
+alwaysApply: false
+---
+## Python Development Guidelines
+
+Follow these rules for all Python code in this project.
+
+### General Principles
+
+- Adhere to the Zen of Python (PEP 20). Run `import this` in a Python interpreter to see it.
+- Write code that is simple, readable, and maintainable.
+- Prefer explicit over implicit.
+
+### Code Style and Formatting
+
+- Follow **PEP 8** for all Python code.
+- Use an autoformatter like `black` to ensure consistent formatting. The line length should be 88 characters.
+- Use `isort` to sort imports automatically. Imports should be grouped as follows: standard library, third-party libraries, and then local application imports.
+
+### Naming Conventions (from PEP 8)
+
+- `lowercase` for functions, methods, variables, and modules.
+- `lower_case_with_underscores` for functions, methods, and variables.
+- `UPPER_CASE_WITH_UNDERSCORES` for constants.
+- `PascalCase` (or `CapWords`) for classes.
+- Private attributes should start with a single underscore (`_private`).
+- Name-mangled attributes (to avoid clashes in subclasses) should start with two underscores (`__super_private`).
+
+### Documentation and Docstrings
+
+- Write clear and concise docstrings for all modules, classes, functions, and methods.
+- Use the **Google Python Style Guide** for docstrings.
+- A docstring should include:
+    - A one-line summary.
+    - A more detailed description if necessary.
+    - `Args:` section for arguments.
+    - `Returns:` section for the return value.
+    - `Raises:` section for any exceptions raised.
+
+Example of a Google-style docstring:
+```python
+def my_function(arg1: int, arg2: str) -> bool:
+    """This is a one-line summary of the function.
+
+    This is a more detailed description of what the function does.
+    It can span multiple lines.
+
+    Args:
+        arg1: The first argument.
+        arg2: The second argument.
+
+    Returns:
+        True if successful, False otherwise.
+
+    Raises:
+        ValueError: If arg1 is not a positive integer.
+    """
+    if arg1 <= 0:
+        raise ValueError("arg1 must be a positive integer")
+    print(arg2)
+    return True
+```
+
+### Type Hinting
+
+- Use type hints for all function signatures (arguments and return values) as specified in PEP 484.
+- Use type hints for variables where the type is not obvious.
+- Use the `typing` module for complex types.
+
+### Project Structure and Dependencies
+
+- The project follows a `src` layout. The main application code is in `src/workbrain`.
+- Project metadata and dependencies are managed in `pyproject.toml`. Use `poetry` or `pip` with `pyproject.toml` support to manage dependencies. Do not use `requirements.txt` unless specified.
+
+### Testing
+
+- Write tests for all new code.
+- Use `pytest` for writing and running tests.
+- Test files should be located in the `tests/` directory.
+- Test files should be named `test_*.py` or `*_test.py`.
+- Test functions should be named `test_*`.
+- Include [pytest.mdc](mdc:.cursor/rules/pytest.mdc) when writing tests.
+
+### Modern Python Features
+
+- Use f-strings for string formatting (`f"hello {name}"`).
+- Use `pathlib` for filesystem paths instead of `os.path`.
+- Use dataclasses (`@dataclass`) for classes that primarily store data.
+- Use context managers (`with` statement) for resources that need to be cleaned up (e.g., file handles, database connections).
+
+### Final Checks
+
+- Before committing code, ensure it is formatted with `black` and imports are sorted with `isort`.
+- Make sure all tests pass.
+- Ensure there are no linting errors (e.g., from `ruff`, `pylint`, or `flake8`). `ruff` is preferred for its speed. 

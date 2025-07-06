@@ -1,0 +1,59 @@
+# Running Tests (uv + Pytest + Black)
+This is a cursor command to run formatting and tests for this python project using uv instead of Poetry.
+You are instructed to run these tests without further prompting.
+
+## Instructions
+IMPORTANT: Run these commands in order and follow these steps exactly.
+
+1. **Change to the project root directory** (if not already there):
+   ```sh
+   cd <project-root>
+   ```
+
+2. **Install dependencies (including dev dependencies):**
+   ```sh
+   uv sync
+   ```
+
+3. **Fix formatting issues with black:**
+   ```sh
+   uv run black .
+   ```
+   - Fix any issues reported by black before proceeding.
+
+4. **Run unit tests:**
+   ```sh
+   uv run pytest
+   ```
+   - To run a specific test file or function:
+     ```sh
+     uv run pytest tests/test_example.py::test_function
+     ```
+
+5. **Fix any issues related to test failures.**
+   - Edit code and/or tests as needed.
+   - Repeat steps 3–5 until all tests pass and code is clean.
+
+6. **(Optional) Check test coverage:**
+   - If using [pytest-cov](mdc:https:/pytest-cov.readthedocs.io/en/latest):
+     ```sh
+     uv run pytest --cov=src/workbrain
+     ```
+
+## Example
+```sh
+cd <project-root>
+uv sync
+uv run black .
+uv run pytest
+```
+
+## Tips & Best Practices
+- Use `uv run` to ensure all commands use the correct virtual environment.
+- Keep your dependencies up to date with `uv pip install -U <package>` or `uv pip install -r requirements.txt`.
+- Use pre-commit hooks to automate formatting with black.
+
+## Tips & Best Practices
+- Use `uv run` to ensure all commands use the correct virtual environment.
+- Keep your dependencies up to date with `uv sync`.
+- Use pre-commit hooks to automate formatting with black.

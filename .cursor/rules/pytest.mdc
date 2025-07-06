@@ -1,0 +1,111 @@
+---
+description: 
+globs: tests/**/*.py
+alwaysApply: false
+---
+# Pytest Testing Guidelines
+
+Follow these rules for writing tests with `pytest`.
+
+## General Principles
+
+- Tests should be clear, concise, and easy to understand.
+- Each test should focus on a single piece of functionality.
+- Tests should be independent and not rely on the state of other tests.
+
+## File and Function Naming
+
+- Test files must be named `test_*.py` or `*_test.py`.
+- Test functions must be prefixed with `test_`. Example: `def test_addition():`.
+- Test classes should be prefixed with `Test`. Example: `class TestMyClass:`.
+
+## Assertions
+
+- Use plain `assert` statements for assertions. `pytest` provides detailed introspection for failing asserts.
+- Avoid using `unittest.TestCase` assertion methods like `self.assertEqual()`.
+
+```python
+# Good
+def test_addition():
+    assert 1 + 1 == 2
+
+# Bad
+import unittest
+class MyTest(unittest.TestCase):
+    def test_addition(self):
+        self.assertEqual(1 + 1, 2)
+```
+
+## Fixtures for Setup and Teardown
+
+- Use `@pytest.fixture` for setup and teardown code. Fixtures are reusable and more flexible than `setup/teardown` methods.
+- To use a fixture, declare it as an argument in your test function.
+- Specify the scope of a fixture (`function`, `class`, `module`, `session`) to control how often it's created. The default is `function`.
+
+```python
+import pytest
+
+@pytest.fixture
+def my_data():
+    """A fixture that provides some data."""
+    return {"key": "value"}
+
+def test_my_data(my_data):
+    assert my_data["key"] == "value"
+```
+
+## Parametrizing Tests
+
+- Use `@pytest.mark.parametrize` to run a single test function with multiple sets of arguments.
+- This helps to avoid code duplication and test various edge cases with the same test logic.
+
+```python
+import pytest
+
+@pytest.mark.parametrize("a, b, expected", [
+    (1, 1, 2),
+    (2, 3, 5),
+    (-1, 1, 0),
+])
+def test_addition(a, b, expected):
+    assert a + b == expected
+```
+
+## Testing for Expected Exceptions
+
+- Use `pytest.raises` as a context manager to assert that a piece of code raises a specific exception.
+
+```python
+import pytest
+
+def my_func():
+    raise ValueError("An error occurred")
+
+def test_raises_exception():
+    with pytest.raises(ValueError, match="An error occurred"):
+        my_func()
+```
+
+## Markers
+
+- Use markers (`@pytest.mark.*`) to group and organize tests.
+- This allows you to selectively run tests based on markers (e.g., `pytest -m smoke`).
+- Register custom markers in `pytest.ini` or `pyproject.toml` to avoid warnings.
+
+```python
+import pytest
+
+@pytest.mark.smoke
+def test_critical_functionality():
+    assert True
+
+@pytest.mark.slow
+def test_long_running_process():
+    # ... some long computation
+    assert True
+```
+
+## Test Structure
+
+- Place tests in the `tests/` directory.
+- The structure of the `tests/` directory should mirror your application's package structure in `src/`. For example, a test for `src/workbrain/module.py` would be `tests/workbrain/test_module.py`.

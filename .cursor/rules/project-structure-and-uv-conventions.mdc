@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+---
+
+# Project Structure & uv Conventions
+
+## Entrypoint
+- The main entrypoint for the application is [`main.py`](mdc:main.py).
+- This file is responsible for initializing the app and delegating to the appropriate modules (CLI, GUI, etc).
+
+## App Structure
+- Core package: [`networkstats/`](mdc:networkstats/)
+  - [`cli.py`](mdc:networkstats/cli.py): Command-line interface logic.
+  - [`config.py`](mdc:networkstats/config.py): Configuration management.
+  - [`monitor.py`](mdc:networkstats/monitor.py): Network monitoring logic.
+  - [`storage.py`](mdc:networkstats/storage.py): Data storage and persistence.
+  - [`menubar.py`](mdc:networkstats/menubar.py): Menubar integration (likely for GUI/desktop usage).
+  - [`gui/`](mdc:networkstats/gui/): GUI components (e.g., [`window.py`](mdc:networkstats/gui/window.py)).
+- Tests: [`tests/`](mdc:tests/)
+- Build scripts: [`scripts/`](mdc:scripts/)
+- Project metadata: [`pyproject.toml`](mdc:pyproject.toml), [`setup.py`](mdc:setup.py)
+
+## uv Conventions
+- This project uses [uv](https://github.com/astral-sh/uv) for Python environment and dependency management.
+- Lockfile: [`uv.lock`](mdc:uv.lock)
+- Install dependencies: `uv pip install -r requirements.txt`
+- Run scripts or app: `uv pip run python main.py`
+- Use `uv` instead of `pip` or `venv` for all dependency and environment management tasks.
+
+## Basic Usage
+- To run the app: `uv run python main.py`
+- To install dependencies: `uv sync`
+- To run tests: `uv run pytest`
+
+## Notes
+- Always prefer `uv` commands for consistency and reproducibility.
+- Refer to this rule for high-level navigation and environment setup.
