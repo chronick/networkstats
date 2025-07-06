@@ -354,3 +354,43 @@ def test_anomaly_detector_outlier_detection():
     # Chart output
     html = detector.create_anomaly_chart(result)
     assert 'html' in html or '<div' in html
+
+def test_packet_loss_chart_bar_line_area():
+    from networkstats.gui.packet_loss_chart import PacketLossChart
+    import polars as pl
+    class DummySource:
+        def get_packet_loss_data(self, timeframe, targets):
+            return pl.DataFrame({
+                'target': ['A', 'B'],
+                'packet_loss_pct': [0.0, 5.5],
+                'datetime': [1, 2]
+            })
+    chart = PacketLossChart(DummySource())
+    # Bar chart
+    chart.chart_type = 'bar'
+    html = chart.create_chart(3600)
+    assert 'html' in html
+    # Line chart
+    chart.chart_type = 'line'
+    html = chart.create_chart(3600)
+    assert 'html' in html
+    # Area chart
+    chart.chart_type = 'area'
+    html = chart.create_chart(3600)
+    assert 'html' in html
+
+def test_drilldown_handler_triggers_detail():
+    from networkstats.gui.drilldown_handler import DrillDownHandler
+    class DummyStatsWindow:
+        def __init__(self):
+            self.detail_called = False
+            self.detail_args = None
+        def show_detail_window(self, target, timestamp):
+            self.detail_called = True
+            self.detail_args = (target, timestamp)
+    stats_window = DummyStatsWindow()
+    handler = DrillDownHandler(stats_window)
+    event_data = {'points': [{'customdata': {'target': 'A', 'timestamp': '12345'}}]}
+    handler.on_chart_click(event_data)
+    assert stats_window.detail_called
+    assert stats_window.detail_args == ('A', '12345')

@@ -50,4 +50,4 @@ class SummaryCard:
         self.value_label.text = self.format_value(current)
         self.trend_label.text = self.format_trend()
         if hasattr(self, 'progress'):
-            self.progress.value = current 
+            self.progress.value = current if current is not None else 0 
