@@ -6,11 +6,11 @@ build-backend = "poetry.core.masonry.api"
 name = "networkstats"
 version = "0.1.0"
 description = "A tool for monitoring and displaying network statistics."
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Nick Donohue <ndonohue@gmail.com>"]
 readme = "README.md"
 license = "MIT"
-repository = "https://github.com/yourusername/network-stats"
-homepage = "https://github.com/yourusername/network-stats"
+repository = "https://github.com/chronick/networkstats"
+homepage = "https://github.com/chronick/networkstats"
 keywords = ["network", "statistics", "monitor"]
 classifiers = [
     "Development Status :: 4 - Beta",

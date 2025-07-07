@@ -20,12 +20,13 @@ class StatsWindow(toga.App):
 
     def startup(self):
         self.main_window = toga.MainWindow(title="Network Stats")
+        self.timeframe_items = [
+            ("Last hour", 3600),
+            ("24 hours", 86400),
+            ("7 days", 604800),
+        ]
         self.timeframe = toga.Selection(
-            items=[
-                ("Last hour", 3600),
-                ("24 hours", 86400),
-                ("7 days", 604800),
-            ],
+            items=[label for label, _ in self.timeframe_items],
             style=Pack(width=150, margin_right=10)
         )
         self.timeframe.on_change = self.refresh
@@ -98,7 +99,8 @@ class StatsWindow(toga.App):
         self.refresh(None)
 
     def refresh(self, widget):
-        span = self.timeframe.value or 3600
+        label = self.timeframe.value or "Last hour"
+        span = dict(self.timeframe_items).get(label, 3600)
         chart_type = self.chart_type.value or "Uptime"
         subtype = self.chart_subtype.value if hasattr(self.chart_subtype, 'value') else None
         metric = self.metric_selector.value if hasattr(self.metric_selector, 'value') else None
@@ -123,7 +125,10 @@ class StatsWindow(toga.App):
             self.latency_card.update(avg_latency)
             # Chart selection
             if chart_type == "Uptime":
-                chart = UptimeChart(lambda tf, t: uptime)
+                class DummySource:
+                    def get_uptime_data(self, tf, t):
+                        return uptime
+                chart = UptimeChart(DummySource())
                 chart.chart_type = subtype or 'bar'
                 html = chart.create_chart(span)
             elif chart_type == "Latency":

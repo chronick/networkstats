@@ -23,7 +23,7 @@ class AutoUpdater:
     
     def generate_appcast(self, version: str, release_notes: str, user: str):
         """Generate appcast.xml for Sparkle."""
-        url = "https://github.com/{user}/network-stats/releases/latest/download/appcast.xml"
+        url = "https://github.com/{user}/networkstats/releases/latest/download/appcast.xml"
         appcast = f"""<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
   <channel>
@@ -34,11 +34,11 @@ class AutoUpdater:
     <item>
       <title>Version {version}</title>
       <sparkle:releaseNotesLink>
-        https://github.com/{user}/network-stats/releases/tag/v{version}
+        https://github.com/{user}/networkstats/releases/tag/v{version}
       </sparkle:releaseNotesLink>
       <pubDate>{self._get_pub_date()}</pubDate>
       <enclosure 
-        url="https://github.com/{user}/network-stats/releases/download/v{version}/NetworkStats-{version}.dmg"
+        url="https://github.com/{user}/networkstats/releases/download/v{version}/NetworkStats-{version}.dmg"
         sparkle:version="{version}"
         type="application/octet-stream"
         sparkle:edSignature="{self._get_signature()}" 

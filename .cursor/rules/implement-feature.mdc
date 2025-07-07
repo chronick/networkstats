@@ -3,7 +3,7 @@ alwaysApply: false
 ---
 # Feature Implementation Guidelines
 
-This rule provides guidelines for implementing features from specification documents in the network-stats project.
+This rule provides guidelines for implementing features from specification documents in the networkstats project.
 
 ## Core Principles
 
