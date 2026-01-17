@@ -123,47 +123,6 @@ logger.warning("Warning messages")
 logger.error("Error messages")
 ```
 
-## Testing Best Practices
-
-### Test Organization
-```python
-# tests/test_feature.py
-import pytest
-from networkstats.feature import Feature
-
-class TestFeature:
-    """Group related tests in classes."""
-    
-    @pytest.fixture
-    def feature_instance(self):
-        """Fixture for common setup."""
-        return Feature(test_config)
-    
-    def test_normal_operation(self, feature_instance):
-        """Test happy path."""
-        assert feature_instance.process(valid_input) == expected
-    
-    def test_edge_case(self, feature_instance):
-        """Test boundary conditions."""
-        assert feature_instance.process(edge_input) == edge_expected
-    
-    def test_error_handling(self, feature_instance):
-        """Test error scenarios."""
-        with pytest.raises(ExpectedError):
-            feature_instance.process(invalid_input)
-```
-
-### Mocking External Dependencies
-```python
-from unittest.mock import Mock, patch
-
-@patch('networkstats.monitor.ping')
-def test_network_check(mock_ping):
-    """Mock external network calls."""
-    mock_ping.return_value = {'latency': 10.5}
-    result = monitor.check_network()
-    assert result['status'] == 'online'
-```
 
 ## Debugging and Troubleshooting
 

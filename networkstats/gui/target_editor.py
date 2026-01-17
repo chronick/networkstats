@@ -1,81 +1,69 @@
-import toga
-from toga.style import Pack
-from toga.style.pack import COLUMN
+import rumps
 
-class TargetEditor(toga.Window):
+class TargetEditor:
+    """A modal dialog for adding or editing a network target using rumps."""
     def __init__(self, target=None, on_save=None):
-        super().__init__(title='Edit Target' if target else 'Add Target', size=(400, 300))
         self.target = target or {}
         self.on_save = on_save
-        form_box = toga.Box(style=Pack(direction=COLUMN, margin=10))
-        self.address_input = toga.TextInput(
-            value=self.target.get('address', ''),
-            placeholder='e.g., 8.8.8.8 or google.com',
-            style=Pack(width=300, margin=5)
-        )
-        self.name_input = toga.TextInput(
-            value=self.target.get('name', ''),
-            placeholder='e.g., Google DNS',
-            style=Pack(width=300, margin=5)
-        )
-        self.protocol_selection = toga.Selection(
-            items=['ICMP', 'TCP', 'UDP', 'HTTP', 'HTTPS'],
-            value=self.target.get('protocol', 'ICMP'),
-            style=Pack(width=100)
-        )
-        self.port_input = toga.NumberInput(
-            value=self.target.get('port', 0),
-            min=0,
-            max=65535,
-            step=1,
-            style=Pack(width=100)
-        )
-        self.timeout_input = toga.NumberInput(
-            value=self.target.get('timeout', 5.0),
-            min=0.1,
-            max=60.0,
-            step=0.1,
-            style=Pack(width=100)
-        )
-        self.tags_input = toga.TextInput(
-            value=', '.join(self.target.get('tags', [])),
-            placeholder='e.g., primary, dns, critical',
-            style=Pack(width=300)
-        )
-        form_box.add(self._create_field('Address:', self.address_input))
-        form_box.add(self._create_field('Display Name:', self.name_input))
-        form_box.add(toga.Divider())
-        form_box.add(toga.Label('Advanced Options:', style=Pack(margin_top=10)))
-        form_box.add(self._create_field('Protocol:', self.protocol_selection))
-        form_box.add(self._create_field('Port:', self.port_input))
-        form_box.add(self._create_field('Timeout (s):', self.timeout_input))
-        form_box.add(self._create_field('Tags:', self.tags_input))
-        button_box = toga.Box(style=Pack(direction="row", margin=10))
-        save_btn = toga.Button('Save', on_press=self._on_save, style=Pack(width=100))
-        cancel_btn = toga.Button('Cancel', on_press=self._on_cancel, style=Pack(width=100))
-        button_box.add(save_btn)
-        button_box.add(cancel_btn)
-        main_box = toga.Box(children=[form_box, button_box], style=Pack(direction=COLUMN))
-        self.content = main_box
 
-    def _create_field(self, label, widget):
-        row = toga.Box(style=Pack(direction="row", margin=2))
-        row.add(toga.Label(label, style=Pack(width=120)))
-        row.add(widget)
-        return row
+    def show(self):
+        # Gather fields using rumps.Window (multi-field input)
+        default_address = self.target.get('address', '')
+        default_name = self.target.get('name', '')
+        default_protocol = self.target.get('protocol', 'ICMP')
+        default_port = str(self.target.get('port', 0))
+        default_timeout = str(self.target.get('timeout', 5.0))
+        default_tags = ', '.join(self.target.get('tags', []))
 
-    def _on_save(self, widget):
-        target = {
-            'address': self.address_input.value.strip(),
-            'name': self.name_input.value.strip(),
-            'protocol': self.protocol_selection.value,
-            'port': int(self.port_input.value),
-            'timeout': float(self.timeout_input.value),
-            'tags': [t.strip() for t in self.tags_input.value.split(',') if t.strip()]
-        }
-        if self.on_save:
-            self.on_save(target)
-        self.close()
-
-    def _on_cancel(self, widget):
-        self.close() 
+        # Compose a multi-line prompt for all fields
+        prompt = (
+            f"Address (e.g., 8.8.8.8 or google.com):\n{default_address}\n"
+            f"Display Name (e.g., Google DNS):\n{default_name}\n"
+            f"Protocol [ICMP/TCP/UDP/HTTP/HTTPS]:\n{default_protocol}\n"
+            f"Port (0-65535):\n{default_port}\n"
+            f"Timeout (seconds):\n{default_timeout}\n"
+            f"Tags (comma separated):\n{default_tags}"
+        )
+        window = rumps.Window(
+            message="Edit Target" if self.target else "Add Target",
+            default_text=f"{default_address}\n{default_name}\n{default_protocol}\n{default_port}\n{default_timeout}\n{default_tags}",
+            ok="Save",
+            cancel="Cancel",
+            dimensions=(400, 180)
+        )
+        window.title = "Edit Target" if self.target else "Add Target"
+        window.message = prompt
+        response = window.run()
+        if response.clicked:
+            values = response.text.split('\n')
+            if len(values) < 6:
+                rumps.alert("Please fill in all fields.")
+                return
+            address = values[0].strip()
+            name = values[1].strip()
+            protocol = values[2].strip().upper()
+            port = int(values[3].strip() or 0)
+            timeout = float(values[4].strip() or 5.0)
+            tags = [t.strip() for t in values[5].split(',') if t.strip()]
+            if not address:
+                rumps.alert("Address is required.")
+                return
+            if protocol not in ['ICMP', 'TCP', 'UDP', 'HTTP', 'HTTPS']:
+                rumps.alert("Invalid protocol.")
+                return
+            if not (0 <= port <= 65535):
+                rumps.alert("Port must be between 0 and 65535.")
+                return
+            if not (0.1 <= timeout <= 60.0):
+                rumps.alert("Timeout must be between 0.1 and 60 seconds.")
+                return
+            target = {
+                'address': address,
+                'name': name,
+                'protocol': protocol,
+                'port': port,
+                'timeout': timeout,
+                'tags': tags
+            }
+            if self.on_save:
+                self.on_save(target) 

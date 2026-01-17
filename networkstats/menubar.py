@@ -2,7 +2,7 @@ import rumps
 import asyncio
 import threading
 from .monitor import monitor
-from .gui import StatsWindow
+from .gui.settings_window import SettingsApp
 import logging
 import sys
 import os
@@ -40,7 +40,7 @@ def run_status_bar():
         Resolve an absolute path to a bundled resource.
 
         • PyInstaller one‑file/one‑dir: use the temporary extract dir (`sys._MEIPASS`).
-        • Frozen macOS .app bundle: use Cocoa’s NSBundle to get the correct
+        • Frozen macOS .app bundle: use Cocoa's NSBundle to get the correct
           Contents/Resources path (robust even if the Python executable
           lives under Frameworks).
         • Development: fall back to the project root.
@@ -59,16 +59,27 @@ def run_status_bar():
         def __init__(self):
             logger.debug("Initializing MenuApp")
             super().__init__("Net📶", icon=icon_path, quit_button=None)
-            self.menu = ["Open Stats", None, "Quit"]
+            self.menu = [
+                rumps.MenuItem("Open Stats", callback=self.open_stats),
+                rumps.MenuItem("Open Settings", callback=self.open_settings),
+                None,
+                rumps.MenuItem("Quit", callback=self.quit_),
+            ]
             global app_instance
             app_instance = self
 
-        @rumps.clicked("Open Stats")
         def open_stats(self, _):
             logger.debug("Open Stats clicked")
-            StatsWindow().main_loop()
+            # Placeholder for stats window logic
+            rumps.alert("Stats window not implemented.")
 
-        @rumps.clicked("Quit")
+        def open_settings(self, _):
+            logger.debug("Open Settings clicked")
+            # Launch the rumps-based settings app as a separate menu bar app
+            # (Alternatively, you could instantiate and run it as a modal, but rumps idiom is a separate app)
+            settings_app = SettingsApp()
+            threading.Thread(target=settings_app.run, daemon=True).start()
+
         def quit_(self, _):
             logger.debug("Quit clicked")
             rumps.quit_application()

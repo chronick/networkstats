@@ -11,31 +11,32 @@ class DummyNotifier:
 
 def test_notification_manager_notify(monkeypatch):
     nm = NotificationManager()
-    outputs = []
-    monkeypatch.setattr("builtins.print", lambda msg: outputs.append(msg))
+    called = {}
+    monkeypatch.setattr("rumps.notification", lambda title, subtitle, message: called.setdefault('notification', (title, subtitle, message)))
     nm.notify("Test message")
-    assert any("Test message" in o for o in outputs)
+    assert called['notification'][2] == "Test message"
 
 def test_notification_manager_play_sound(monkeypatch):
     nm = NotificationManager()
-    outputs = []
-    monkeypatch.setattr("builtins.print", lambda msg: outputs.append(msg))
+    called = {}
+    monkeypatch.setattr("rumps.alert", lambda title, message: called.setdefault('alert', (title, message)))
     nm.play_sound()
-    assert any("[SOUND]" in o for o in outputs)
+    assert called['alert'][0] == "Alert"
+    assert called['alert'][1] == "Sound only"
 
 def test_notification_manager_show_badge(monkeypatch):
     nm = NotificationManager()
-    outputs = []
-    monkeypatch.setattr("builtins.print", lambda msg: outputs.append(msg))
+    called = {}
+    nm.set_badge = lambda text: called.setdefault('badge', text)
     nm.show_badge("ALERT")
-    assert any("ALERT" in o for o in outputs)
+    assert called['badge'] == "ALERT"
 
 def test_notification_manager_show_notification_center(monkeypatch):
     nm = NotificationManager()
-    outputs = []
-    monkeypatch.setattr("builtins.print", lambda msg: outputs.append(msg))
+    called = {}
+    monkeypatch.setattr("rumps.notification", lambda title, subtitle, message: called.setdefault('notification', (title, subtitle, message)))
     nm.show_notification_center("NC message")
-    assert any("NC message" in o for o in outputs)
+    assert called['notification'][2] == "NC message"
 
 def test_notification_manager_show_badge_menubar(monkeypatch):
     nm = NotificationManager()
